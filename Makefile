@@ -1,12 +1,8 @@
-#TODO
 # Define the binary name
-BINARY_NAME=auth
+BINARY_NAME=ahu-cli
 
 # Define the local bin directory for project-specific tools
 LOCAL_BIN_DIR := $(CURDIR)/bin
-
-# Path to the goose binary within the local bin directory
-GOOSE_BIN := $(LOCAL_BIN_DIR)/goose
 
 install-tools: ## Installs Go tools required by the project into a local bin directory.
 		@echo "${YELLOW}Installing project tools to $(LOCAL_BIN_DIR)...${RESET}"
