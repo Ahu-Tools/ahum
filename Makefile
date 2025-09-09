@@ -20,6 +20,10 @@ build:
 run-%:
 		go run $*/$(MODULE)/main.go
 
+# Run the playground
+play:
+		go run cmd/playground/main.go
+
 # Clean build artifacts
 clean:
 		go clean
