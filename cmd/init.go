@@ -1,13 +1,14 @@
 /*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
+Copyright © 2025 Sina Sadeghi sina.sadeghi83@gmail.com
 */
 package cmd
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 
+	tproj "github.com/Ahu-Tools/AhuM/pkg/tui/project"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
 
@@ -16,9 +17,13 @@ var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialise an Ahu project",
 	Long:  `Create folders and go files related to the main architecture of the Ahu project`,
-	Args:  cobra.MatchAll(cobra.RangeArgs(1, 3), checkPortRange),
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("init called")
+	RunE: func(cmd *cobra.Command, args []string) error {
+		model := tproj.NewInitModel()
+		p := tea.NewProgram(model)
+		if _, err := p.Run(); err != nil {
+			return err
+		}
+		return nil
 	},
 }
 
