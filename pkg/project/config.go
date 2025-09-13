@@ -1,103 +1,65 @@
 package project
 
 import (
-	"crypto/rand"
-	"encoding/hex"
-	"encoding/json"
-	"fmt"
 	"os"
+	"path/filepath"
+	"text/template"
 
 	"github.com/Ahu-Tools/AhuM/pkg/postgres"
 )
 
-type InfraList map[string]interface{}
-
-type Server struct {
-	Host string `json:"host"`
-	Port string `json:"port"`
+type Config struct {
+	PackageName string
+	Pkgs        []string
+	Infras      []InfraConfig
 }
 
-type Api struct {
-	Server Server `json:"server"`
-}
-
-type App struct {
-	SecretKey string `json:"secret_key"`
-}
-
-type ConfigJSON struct {
-	App    App       `json:"app"`
-	Api    Api       `json:"api"`
-	Infras InfraList `json:"infras"`
-}
-
-type Infra interface {
-	Name() string
-	Config() (any, error)
+type InfraConfig interface {
+	Pkgs() ([]string, error)
+	Load() (string, error)
 }
 
 func (p *Project) GenerateConfig() error {
-	infras, err := p.getInfrasConfig()
+	infras, err := p.getInfraConfigs()
 	if err != nil {
 		return err
 	}
 
-	secretKey := genSecretKey()
-	app := App{
-		SecretKey: secretKey,
+	config := Config{
+		PackageName: p.PackageName,
+		Infras:      infras,
 	}
 
-	api := Api{
-		Server: Server{
-			Host: "0.0.0.0",
-			Port: "8080",
-		},
+	tmplName := "config.go.tpl"
+	tmplPath := "template/config/" + tmplName
+	tmpl, err := template.ParseFiles(tmplPath)
+	if err != nil {
+		return err
 	}
 
-	data := ConfigJSON{
-		App:    app,
-		Api:    api,
-		Infras: infras,
-	}
-
-	f, err := os.Create(p.RootPath + "/config.json")
+	filePath := filepath.Join(p.RootPath + "/config/config.go")
+	f, err := os.Create(filePath)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
-	jsonData, err := json.MarshalIndent(data, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	_, err = f.Write(jsonData)
-	return err
+	return tmpl.ExecuteTemplate(f, tmplName, config)
 }
 
-func (p *Project) getInfrasConfig() (InfraList, error) {
-	infraList := make(InfraList)
+func (p *Project) getInfraConfigs() ([]InfraConfig, error) {
+	infras := make([]InfraConfig, 0)
+
 	for _, db := range p.Dbs {
-		var infra Infra
+		var infraConfig InfraConfig
+
 		switch db {
 		case POSTGRES:
-			infra = postgres.DefaultPostgresConfig()
-			infra.(*postgres.PostgresConfig).DbName = p.Name
+			infraConfig = postgres.NewPostgresConfig(p.PackageName)
 		}
-		infraJson, err := infra.Config()
-		if err != nil {
-			return nil, fmt.Errorf("failed to load infrastructure config: %e", err)
-		}
-		infraList[infra.Name()] = infraJson
+
+		infras = append(infras, infraConfig)
 	}
 
-	return infraList, nil
-}
-
-func genSecretKey() string {
-	key := make([]byte, 32)
-	if _, err := rand.Read(key); err != nil {
-		return ""
-	}
-	return hex.EncodeToString(key)
+	return infras, nil
 }

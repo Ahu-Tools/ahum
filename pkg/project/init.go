@@ -2,7 +2,7 @@ package project
 
 import "os"
 
-const DefaultDirPerms = 755
+const DefaultDirPerms = 0775
 
 func (p Project) Generate() error {
 	err := os.MkdirAll(p.RootPath, DefaultDirPerms)
@@ -15,7 +15,17 @@ func (p Project) Generate() error {
 		return err
 	}
 
-	return p.GenerateConfig()
+	err = p.GenerateJSONConfig()
+	if err != nil {
+		return err
+	}
+
+	err = p.GenerateConfig()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func createBasicDirs(rootPath string) error {

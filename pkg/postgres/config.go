@@ -1,40 +1,48 @@
 package postgres
 
+import (
+	"bytes"
+	"os"
+	"strings"
+	"text/template"
+)
+
 type PostgresConfig struct {
-	User     string `json:"user"`
-	Password string `json:"password"`
-	DbName   string `json:"db_name"`
-	Host     string `json:"host"`
-	Port     string `json:"port"`
-	SSLMode  string `json:"sslmode"`
+	PackageName string
 }
 
-func NewPostgresConfig(user, password, dbName, host, port, sslMode string) *PostgresConfig {
+func NewPostgresConfig(packageName string) *PostgresConfig {
 	return &PostgresConfig{
-		User:     user,
-		Password: password,
-		DbName:   dbName,
-		Host:     host,
-		Port:     port,
-		SSLMode:  sslMode,
+		PackageName: packageName,
 	}
 }
 
-func DefaultPostgresConfig() *PostgresConfig {
-	return &PostgresConfig{
-		User:     "postgres",
-		Password: "postgres",
-		DbName:   "my_app",
-		Host:     "127.0.0.1",
-		Port:     "5432",
-		SSLMode:  "disable",
+func (c PostgresConfig) Pkgs() ([]string, error) {
+	tmplName := "config_imports.go.tpl"
+	tmplPath := "template/infrastructures/postgres/" + tmplName
+	tmpl, err := template.ParseFiles(tmplPath)
+	if err != nil {
+		return nil, err
 	}
+
+	var importsBytes bytes.Buffer
+	err = tmpl.ExecuteTemplate(&importsBytes, tmplName, c)
+	if err != nil {
+		return nil, err
+	}
+
+	imports := strings.Split(importsBytes.String(), "\n")
+	for i, l := range imports {
+		imports[i] = strings.TrimSpace(l)
+	}
+
+	return imports, nil
 }
 
-func (pc PostgresConfig) Name() string {
-	return "postgres"
-}
-
-func (pc PostgresConfig) Config() (any, error) {
-	return pc, nil
+func (c PostgresConfig) Load() (string, error) {
+	resultBytes, err := os.ReadFile("template/infrastructures/postgres/loadconfig.go.tpl")
+	if err != nil {
+		return "", err
+	}
+	return string(resultBytes), nil
 }
