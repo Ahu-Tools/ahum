@@ -4,8 +4,6 @@ import (
 	"os"
 	"path/filepath"
 	"text/template"
-
-	"github.com/Ahu-Tools/AhuM/pkg/postgres"
 )
 
 type Config struct {
@@ -20,14 +18,9 @@ type InfraConfig interface {
 }
 
 func (p *Project) GenerateConfig() error {
-	infras, err := p.getInfraConfigs()
-	if err != nil {
-		return err
-	}
-
 	config := Config{
-		PackageName: p.PackageName,
-		Infras:      infras,
+		PackageName: p.Info.PackageName,
+		Infras:      p.InfrasConfig,
 	}
 
 	tmplName := "config.go.tpl"
@@ -37,7 +30,7 @@ func (p *Project) GenerateConfig() error {
 		return err
 	}
 
-	filePath := filepath.Join(p.RootPath + "/config/config.go")
+	filePath := filepath.Join(p.Info.RootPath + "/config/config.go")
 	f, err := os.Create(filePath)
 	if err != nil {
 		return err
@@ -45,21 +38,4 @@ func (p *Project) GenerateConfig() error {
 	defer f.Close()
 
 	return tmpl.ExecuteTemplate(f, tmplName, config)
-}
-
-func (p *Project) getInfraConfigs() ([]InfraConfig, error) {
-	infras := make([]InfraConfig, 0)
-
-	for _, db := range p.Dbs {
-		var infraConfig InfraConfig
-
-		switch db {
-		case POSTGRES:
-			infraConfig = postgres.NewPostgresConfig(p.PackageName)
-		}
-
-		infras = append(infras, infraConfig)
-	}
-
-	return infras, nil
 }

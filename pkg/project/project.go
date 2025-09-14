@@ -12,18 +12,30 @@ const (
 	POSTGRES Database = iota
 )
 
-type Project struct {
+type ProjectInfo struct {
 	Name        string
 	PackageName string
 	RootPath    string
-
-	Edges []Edge
-	Dbs   []Database
 }
 
-func NewProject(name, rootPath string) Project {
+type Project struct {
+	Info         ProjectInfo
+	InfrasConfig []InfraConfig
+	InfrasJson   []JSONInfra
+}
+
+func NewProjectInfo(name, packageName, rootPath string) *ProjectInfo {
+	return &ProjectInfo{
+		name,
+		packageName,
+		rootPath,
+	}
+}
+
+func NewProject(info ProjectInfo, infrasConfig []InfraConfig, infrasJson []JSONInfra) Project {
 	return Project{
-		Name:     name,
-		RootPath: rootPath,
+		Info:         info,
+		InfrasConfig: infrasConfig,
+		InfrasJson:   infrasJson,
 	}
 }

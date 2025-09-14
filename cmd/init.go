@@ -4,9 +4,7 @@ Copyright © 2025 Sina Sadeghi sina.sadeghi83@gmail.com
 package cmd
 
 import (
-	"errors"
-	"strconv"
-
+	"github.com/Ahu-Tools/AhuM/pkg/tui/basic"
 	tproj "github.com/Ahu-Tools/AhuM/pkg/tui/project"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
@@ -18,8 +16,9 @@ var initCmd = &cobra.Command{
 	Short: "Initialise an Ahu project",
 	Long:  `Create folders and go files related to the main architecture of the Ahu project`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		model := tproj.NewInitModel()
-		p := tea.NewProgram(model)
+		model := tproj.NewProjectForms()
+		router := basic.NewRouter(model)
+		p := tea.NewProgram(router)
 		if _, err := p.Run(); err != nil {
 			return err
 		}
@@ -39,28 +38,4 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// initCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
-
-func checkPortRange(cmd *cobra.Command, args []string) error {
-	var portStr string
-
-	switch len(args) {
-	case 2:
-		portStr = args[1]
-	case 3:
-		portStr = args[2]
-	default:
-		return nil
-	}
-
-	port, err := strconv.Atoi(portStr)
-	if err != nil {
-		return errors.New("port must be a positive integer number")
-	}
-
-	if port > 65535 || port <= 0 {
-		return errors.New("provided port is not in the valid range")
-	}
-
-	return nil
 }

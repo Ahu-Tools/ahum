@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-
-	"github.com/Ahu-Tools/AhuM/pkg/postgres"
 )
 
 type InfraList map[string]interface{}
@@ -60,7 +58,7 @@ func (p *Project) GenerateJSONConfig() error {
 		Infras: infras,
 	}
 
-	f, err := os.Create(p.RootPath + "/config.json")
+	f, err := os.Create(p.Info.RootPath + "/config.json")
 	if err != nil {
 		return err
 	}
@@ -77,15 +75,7 @@ func (p *Project) GenerateJSONConfig() error {
 
 func (p *Project) getInfrasConfig() (InfraList, error) {
 	infraList := make(InfraList)
-	for _, db := range p.Dbs {
-		var infra JSONInfra
-
-		switch db {
-		case POSTGRES:
-			infra = postgres.DefaultPostgresJSONConfig()
-			infra.(*postgres.PostgresJSONConfig).DbName = p.Name
-		}
-
+	for _, infra := range p.InfrasJson {
 		infraJson, err := infra.Config()
 		if err != nil {
 			return nil, fmt.Errorf("failed to load infrastructure config: %e", err)

@@ -5,15 +5,17 @@ import (
 	"os"
 	"strings"
 	"text/template"
+
+	"github.com/Ahu-Tools/AhuM/pkg/project"
 )
 
 type PostgresConfig struct {
-	PackageName string
+	projectInfo project.ProjectInfo
 }
 
-func NewPostgresConfig(packageName string) *PostgresConfig {
+func NewPostgresConfig(projectInfo project.ProjectInfo) *PostgresConfig {
 	return &PostgresConfig{
-		PackageName: packageName,
+		projectInfo: projectInfo,
 	}
 }
 
@@ -26,7 +28,11 @@ func (c PostgresConfig) Pkgs() ([]string, error) {
 	}
 
 	var importsBytes bytes.Buffer
-	err = tmpl.ExecuteTemplate(&importsBytes, tmplName, c)
+
+	data := map[string]string{
+		"PackageName": c.projectInfo.PackageName,
+	}
+	err = tmpl.ExecuteTemplate(&importsBytes, tmplName, data)
 	if err != nil {
 		return nil, err
 	}

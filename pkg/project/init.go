@@ -5,12 +5,12 @@ import "os"
 const DefaultDirPerms = 0775
 
 func (p Project) Generate() error {
-	err := os.MkdirAll(p.RootPath, DefaultDirPerms)
+	err := os.MkdirAll(p.Info.RootPath, DefaultDirPerms)
 	if err != nil {
 		return err
 	}
 
-	err = createBasicDirs(p.RootPath)
+	err = createBasicDirs(p.Info.RootPath)
 	if err != nil {
 		return err
 	}
