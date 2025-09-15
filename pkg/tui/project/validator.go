@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 )
@@ -29,7 +30,9 @@ func validatePath(path string) error {
 		return nil
 	}
 
-	info, err := os.Stat(path)
+	//Check if parent path exists
+	parentPath := filepath.Dir(path)
+	info, err := os.Stat(parentPath)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return fmt.Errorf("provided path does not exist")
@@ -37,7 +40,9 @@ func validatePath(path string) error {
 		return fmt.Errorf("invalid path: %e", err)
 	}
 
-	if !info.IsDir() {
+	//Check if the provided path is a directory
+	info, err = os.Stat(path)
+	if err == nil && !info.IsDir() {
 		return fmt.Errorf("`%s` does not point to a directory", path)
 	}
 	return nil

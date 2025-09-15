@@ -15,6 +15,7 @@ const (
 type ProjectInfo struct {
 	Name        string
 	PackageName string
+	GoVersion   string
 	RootPath    string
 }
 
@@ -24,10 +25,11 @@ type Project struct {
 	InfrasJson   []JSONInfra
 }
 
-func NewProjectInfo(name, packageName, rootPath string) *ProjectInfo {
+func NewProjectInfo(name, packageName, goVersion, rootPath string) *ProjectInfo {
 	return &ProjectInfo{
 		name,
 		packageName,
+		goVersion,
 		rootPath,
 	}
 }

@@ -1,6 +1,9 @@
 package project
 
 import (
+	"runtime"
+	"strings"
+
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 	"github.com/Ahu-Tools/AhuM/pkg/tui/basic"
 	tea "github.com/charmbracelet/bubbletea"
@@ -13,7 +16,13 @@ type InfoForm struct {
 }
 
 func NewInfoForm() InfoForm {
-	info := project.NewProjectInfo("", "", ".")
+	// Get the full version string, e.g., "go1.22.5"
+	fullVersionString := runtime.Version()
+
+	// Remove the "go" prefix to get just the number part
+	versionNumber := strings.TrimPrefix(fullVersionString, "go")
+
+	info := project.NewProjectInfo("", "", versionNumber, ".")
 	form := huh.NewForm(huh.NewGroup(
 		huh.NewInput().
 			Title("Enter the name of your new project:").
@@ -26,6 +35,12 @@ func NewInfoForm() InfoForm {
 			Validate(validateName).
 			Value(&info.PackageName).
 			Key("packageName"),
+
+		huh.NewInput().
+			Title("Enter the Go version of your new project:").
+			Validate(huh.ValidateNotEmpty()).
+			Value(&info.GoVersion).
+			Key("goVersion"),
 
 		huh.NewInput().
 			Title("Enter the root path of your new project:").
