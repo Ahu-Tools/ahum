@@ -1,7 +1,7 @@
 To install:<br>
 <code>go install github.com/Ahu-Tools/AhuM@latest</code>
 <br><br>
-Milestones:
+Milestones:<br>
     1.Initialise an Ahu project structure ✅
         1.1. Basic directories ✅
         1.2. Basic config.json generation ✅
