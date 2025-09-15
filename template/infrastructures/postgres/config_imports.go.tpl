@@ -1,1 +1,1 @@
-{{.PackageName}}/infrastructure/db/postgres
+{{.PackageName}}/infrastructure/{{.Name}}

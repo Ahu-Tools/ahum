@@ -13,8 +13,10 @@ type Config struct {
 }
 
 type InfraConfig interface {
+	Generate(chan string, GenerationGuide) error
 	Pkgs() ([]string, error)
 	Load() (string, error)
+	Name() string
 }
 
 func (p *Project) GenerateConfig() error {

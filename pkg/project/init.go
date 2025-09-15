@@ -9,22 +9,38 @@ import (
 const DefaultDirPerms = 0775
 const DefaultFilePerms = 0664
 
+type GenerationGuide struct {
+	RootPath  string
+	DirPerms  os.FileMode
+	FilePerms os.FileMode
+}
+
+func NewGenerationGuide(rootPath string, DirPerms, FilePerms os.FileMode) GenerationGuide {
+	return GenerationGuide{
+		RootPath:  rootPath,
+		DirPerms:  DirPerms,
+		FilePerms: FilePerms,
+	}
+}
+
 func (p Project) Generate(statusChan chan string) error {
 	defer close(statusChan)
 
+	genGuide := NewGenerationGuide(p.Info.RootPath, DefaultDirPerms, DefaultFilePerms)
+
 	statusChan <- "Generating project directories structure..."
-	err := os.MkdirAll(p.Info.RootPath, DefaultDirPerms)
+	err := os.MkdirAll(genGuide.RootPath, genGuide.DirPerms)
 	if err != nil {
 		return err
 	}
 
-	err = createBasicDirs(p.Info.RootPath, p.InfrasJson)
+	err = createBasicDirs(genGuide, p.InfrasJson)
 	if err != nil {
 		return err
 	}
 
 	statusChan <- "Initialising go.mod file..."
-	err = goInit(p.Info.RootPath, p.Info.PackageName, p.Info.GoVersion)
+	err = goInit(genGuide.RootPath, p.Info.PackageName, p.Info.GoVersion)
 	if err != nil {
 		return err
 	}
@@ -41,20 +57,26 @@ func (p Project) Generate(statusChan chan string) error {
 		return err
 	}
 
+	statusChan <- "Generating infrastructures..."
+	err = p.GenerateInfras(statusChan, genGuide)
+	if err != nil {
+		return err
+	}
+
 	statusChan <- "Running go mod tidy..."
-	err = goModTidy(p.Info.RootPath)
+	err = goModTidy(genGuide.RootPath)
 	if err != nil {
 		return err
 	}
 
 	statusChan <- "Running go mod download..."
-	err = goModDownload(p.Info.RootPath)
+	err = goModDownload(genGuide.RootPath)
 	if err != nil {
 		return err
 	}
 
 	statusChan <- "Running go fmt..."
-	err = goFmt(p.Info.RootPath)
+	err = goFmt(genGuide.RootPath)
 	if err != nil {
 		return err
 	}
@@ -95,55 +117,55 @@ func goFmt(rootPath string) error {
 	return nil
 }
 
-func createBasicDirs(rootPath string, infras []JSONInfra) error {
-	err := os.Mkdir(rootPath+"/bin", DefaultDirPerms)
+func createBasicDirs(genGuide GenerationGuide, infras []JSONInfra) error {
+	err := os.Mkdir(genGuide.RootPath+"/bin", genGuide.DirPerms)
 	if err != nil {
 		return err
 	}
 
-	err = os.Mkdir(rootPath+"/chain", DefaultDirPerms)
+	err = os.Mkdir(genGuide.RootPath+"/chain", genGuide.DirPerms)
 	if err != nil {
 		return err
 	}
 
-	err = os.MkdirAll(rootPath+"/cmd/api", DefaultDirPerms)
+	err = os.MkdirAll(genGuide.RootPath+"/cmd/api", genGuide.DirPerms)
 	if err != nil {
 		return err
 	}
 
-	err = os.Mkdir(rootPath+"/config", DefaultDirPerms)
+	err = os.Mkdir(genGuide.RootPath+"/config", genGuide.DirPerms)
 	if err != nil {
 		return err
 	}
 
-	err = os.Mkdir(rootPath+"/data", DefaultDirPerms)
+	err = os.Mkdir(genGuide.RootPath+"/data", genGuide.DirPerms)
 	if err != nil {
 		return err
 	}
 
-	err = os.Mkdir(rootPath+"/docs", DefaultDirPerms)
+	err = os.Mkdir(genGuide.RootPath+"/docs", genGuide.DirPerms)
 	if err != nil {
 		return err
 	}
 
-	err = os.Mkdir(rootPath+"/edge", DefaultDirPerms)
+	err = os.Mkdir(genGuide.RootPath+"/edge", genGuide.DirPerms)
 	if err != nil {
 		return err
 	}
 
-	err = os.Mkdir(rootPath+"/infrastructure", DefaultDirPerms)
+	err = os.Mkdir(genGuide.RootPath+"/infrastructure", genGuide.DirPerms)
 	if err != nil {
 		return err
 	}
 
 	for _, v := range infras {
-		err = os.Mkdir(rootPath+"/infrastructure/"+v.Name(), DefaultDirPerms)
+		err = os.Mkdir(genGuide.RootPath+"/infrastructure/"+v.Name(), genGuide.DirPerms)
 		if err != nil {
 			return err
 		}
 	}
 
-	err = os.Mkdir(rootPath+"/service", DefaultDirPerms)
+	err = os.Mkdir(genGuide.RootPath+"/service", genGuide.DirPerms)
 	if err != nil {
 		return err
 	}

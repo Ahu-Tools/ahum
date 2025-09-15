@@ -31,6 +31,7 @@ func (c PostgresConfig) Pkgs() ([]string, error) {
 
 	data := map[string]string{
 		"PackageName": c.projectInfo.PackageName,
+		"Name":        c.Name(),
 	}
 	err = tmpl.ExecuteTemplate(&importsBytes, tmplName, data)
 	if err != nil {
@@ -51,4 +52,8 @@ func (c PostgresConfig) Load() (string, error) {
 		return "", err
 	}
 	return string(resultBytes), nil
+}
+
+func (pc PostgresConfig) Name() string {
+	return "postgres"
 }

@@ -6,12 +6,12 @@ Milestones:
         1.4. Go mod init at the end ✅
         1.5. Go mod tidy at the end ✅
 
-    2.Initialising infrastructures ⏳
+    2.Initialising infrastructures ✅
         2.1. Form list to choose ✅
         2.2. Run registered infrastructures forms ✅
         2.3. Inject infrastructures configurations to config.json ✅
         2.4. Inject infrastructures configurations loadings to config.go ✅
-        2.5. Basic infrastructure file generations
+        2.5. Basic infrastructures files generations ✅
 
     3.Create an Ahu service(chain, service, data)
 
