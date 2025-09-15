@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Ahu-Tools/AhuM/cmd/initialise"
+	"github.com/Ahu-Tools/AhuM/cmd/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -31,6 +33,8 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	rootCmd.AddCommand(initialise.InitCmd)
+	rootCmd.AddCommand(service.ServiceCmd)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,

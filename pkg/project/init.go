@@ -23,24 +23,26 @@ func NewGenerationGuide(rootPath string, DirPerms, FilePerms os.FileMode) Genera
 	}
 }
 
+func DefaultGenerationGuide(rootPath string) GenerationGuide {
+	return NewGenerationGuide(rootPath, DefaultDirPerms, DefaultFilePerms)
+}
+
 func (p Project) Generate(statusChan chan string) error {
 	defer close(statusChan)
 
-	genGuide := NewGenerationGuide(p.Info.RootPath, DefaultDirPerms, DefaultFilePerms)
-
 	statusChan <- "Generating project directories structure..."
-	err := os.MkdirAll(genGuide.RootPath, genGuide.DirPerms)
+	err := os.MkdirAll(p.GenGuide.RootPath, p.GenGuide.DirPerms)
 	if err != nil {
 		return err
 	}
 
-	err = createBasicDirs(genGuide, p.Infras)
+	err = createBasicDirs(p.GenGuide, p.Infras)
 	if err != nil {
 		return err
 	}
 
 	statusChan <- "Initialising go.mod file..."
-	err = goInit(genGuide.RootPath, p.Info.PackageName, p.Info.GoVersion)
+	err = goInit(p.GenGuide.RootPath, p.Info.PackageName, p.Info.GoVersion)
 	if err != nil {
 		return err
 	}
@@ -58,25 +60,25 @@ func (p Project) Generate(statusChan chan string) error {
 	}
 
 	statusChan <- "Generating infrastructures..."
-	err = p.GenerateInfras(statusChan, genGuide)
+	err = p.GenerateInfras(statusChan)
 	if err != nil {
 		return err
 	}
 
 	statusChan <- "Running go mod tidy..."
-	err = goModTidy(genGuide.RootPath)
+	err = goModTidy(p.GenGuide.RootPath)
 	if err != nil {
 		return err
 	}
 
 	statusChan <- "Running go mod download..."
-	err = goModDownload(genGuide.RootPath)
+	err = goModDownload(p.GenGuide.RootPath)
 	if err != nil {
 		return err
 	}
 
 	statusChan <- "Running go fmt..."
-	err = goFmt(genGuide.RootPath)
+	err = goFmt(p.GenGuide.RootPath)
 	if err != nil {
 		return err
 	}
