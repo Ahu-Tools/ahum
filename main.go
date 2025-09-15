@@ -1,6 +1,5 @@
 /*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
+Copyright © 2025 Sina Sadeghi sina.sadeghi83@gmail.com
 */
 package main
 
