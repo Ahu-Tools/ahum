@@ -1,9 +1,9 @@
 package project
 
 import (
-	"os"
 	"path/filepath"
-	"text/template"
+
+	"github.com/Ahu-Tools/AhuM/pkg/util"
 )
 
 type Config struct {
@@ -26,19 +26,8 @@ func (p *Project) GenerateConfig() error {
 		Infras:      p.Infras,
 	}
 
-	tmplName := "config.go.tpl"
-	tmplPath := "template/config/" + tmplName
-	tmpl, err := template.ParseFiles(tmplPath)
-	if err != nil {
-		return err
-	}
-
+	tmplPath := "template/config/config.go.tpl"
 	filePath := filepath.Join(p.Info.RootPath + "/config/config.go")
-	f, err := os.Create(filePath)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
 
-	return tmpl.ExecuteTemplate(f, tmplName, config)
+	return util.ParseTemplateFile(tmplPath, config, filePath)
 }
