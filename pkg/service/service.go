@@ -85,19 +85,12 @@ func (s Service) parseTemplate(pkg string, template string) error {
 
 func (s Service) generateBasicDirs() error {
 	r, p := s.project.GenGuide.RootPath, s.project.GenGuide.DirPerms
-	err := os.MkdirAll(fmt.Sprintf("%s/chain/%s", r, s.serviceData.PackageName), p)
-	if err != nil {
-		return err
-	}
 
-	err = os.MkdirAll(fmt.Sprintf("%s/service/%s", r, s.serviceData.PackageName), p)
-	if err != nil {
-		return err
-	}
-
-	err = os.MkdirAll(fmt.Sprintf("%s/data/%s", r, s.serviceData.PackageName), p)
-	if err != nil {
-		return err
+	for _, pkg := range []string{"chain", "service", "data"} {
+		err := os.MkdirAll(fmt.Sprintf("%s/%s/%s", r, pkg, s.serviceData.PackageName), p)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
