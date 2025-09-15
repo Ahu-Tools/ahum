@@ -9,20 +9,21 @@ import (
 type Config struct {
 	PackageName string
 	Pkgs        []string
-	Infras      []InfraConfig
+	Infras      []Infra
 }
 
-type InfraConfig interface {
+type Infra interface {
 	Generate(chan string, GenerationGuide) error
 	Pkgs() ([]string, error)
 	Load() (string, error)
 	Name() string
+	JsonConfig() (any, error)
 }
 
 func (p *Project) GenerateConfig() error {
 	config := Config{
 		PackageName: p.Info.PackageName,
-		Infras:      p.InfrasConfig,
+		Infras:      p.Infras,
 	}
 
 	tmplName := "config.go.tpl"

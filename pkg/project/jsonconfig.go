@@ -29,11 +29,6 @@ type ConfigJSON struct {
 	Infras InfraList `json:"infras"`
 }
 
-type JSONInfra interface {
-	Name() string
-	Config() (any, error)
-}
-
 func (p *Project) GenerateJSONConfig() error {
 	infras, err := p.getInfrasConfig()
 	if err != nil {
@@ -75,8 +70,8 @@ func (p *Project) GenerateJSONConfig() error {
 
 func (p *Project) getInfrasConfig() (InfraList, error) {
 	infraList := make(InfraList)
-	for _, infra := range p.InfrasJson {
-		infraJson, err := infra.Config()
+	for _, infra := range p.Infras {
+		infraJson, err := infra.JsonConfig()
 		if err != nil {
 			return nil, fmt.Errorf("failed to load infrastructure config: %e", err)
 		}

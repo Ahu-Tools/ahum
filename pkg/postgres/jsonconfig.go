@@ -30,11 +30,3 @@ func DefaultPostgresJSONConfig() *PostgresJSONConfig {
 		SSLMode:  "disable",
 	}
 }
-
-func (pc PostgresJSONConfig) Name() string {
-	return "postgres"
-}
-
-func (pc PostgresJSONConfig) Config() (any, error) {
-	return pc, nil
-}

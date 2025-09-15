@@ -9,17 +9,19 @@ import (
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 )
 
-type PostgresConfig struct {
+type Postgres struct {
 	projectInfo project.ProjectInfo
+	jsonConfig  PostgresJSONConfig
 }
 
-func NewPostgresConfig(projectInfo project.ProjectInfo) *PostgresConfig {
-	return &PostgresConfig{
+func NewPostgres(projectInfo project.ProjectInfo, postgresJSONConfig PostgresJSONConfig) *Postgres {
+	return &Postgres{
 		projectInfo: projectInfo,
+		jsonConfig:  postgresJSONConfig,
 	}
 }
 
-func (c PostgresConfig) Pkgs() ([]string, error) {
+func (c Postgres) Pkgs() ([]string, error) {
 	tmplName := "config_imports.go.tpl"
 	tmplPath := "template/infrastructures/postgres/" + tmplName
 	tmpl, err := template.ParseFiles(tmplPath)
@@ -46,7 +48,7 @@ func (c PostgresConfig) Pkgs() ([]string, error) {
 	return imports, nil
 }
 
-func (c PostgresConfig) Load() (string, error) {
+func (c Postgres) Load() (string, error) {
 	resultBytes, err := os.ReadFile("template/infrastructures/postgres/loadconfig.go.tpl")
 	if err != nil {
 		return "", err
@@ -54,6 +56,10 @@ func (c PostgresConfig) Load() (string, error) {
 	return string(resultBytes), nil
 }
 
-func (pc PostgresConfig) Name() string {
+func (pc Postgres) Name() string {
 	return "postgres"
+}
+
+func (pc Postgres) JsonConfig() (any, error) {
+	return pc.jsonConfig, nil
 }

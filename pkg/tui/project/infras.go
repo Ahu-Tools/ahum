@@ -10,11 +10,9 @@ import (
 type InfrasForms struct {
 	form *huh.Form
 
-	prInfo       project.ProjectInfo
-	infras       []basic.RouterModel
-	infrasConfig []project.InfraConfig
-	infrasJson   []project.JSONInfra
-	infrasStep   int
+	prInfo     project.ProjectInfo
+	infras     []project.Infra
+	infrasStep int
 }
 
 func NewInfrasForms(prInfo project.ProjectInfo) InfrasForms {
@@ -51,24 +49,21 @@ func (pjfs InfrasForms) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	pjfs.form = newForm.(*huh.Form)
 
 	if pjfs.form.State == huh.StateCompleted {
-		pjfs.infras = pjfs.form.Get("infras").([]basic.RouterModel)
+		infrasModel := pjfs.form.Get("infras").([]basic.RouterModel)
+		pjfs.infras = make([]project.Infra, len(infrasModel))
 
-		pjfs.infrasConfig = make([]project.InfraConfig, len(pjfs.infras))
-		pjfs.infrasJson = make([]project.JSONInfra, len(pjfs.infras))
-
-		if len(pjfs.infras) == 0 {
+		if len(infrasModel) == 0 {
 			return pjfs, basic.SignalRouter(
 				nil,
 				basic.Back,
 				basic.MsgParams{
-					"infras_config": pjfs.infrasConfig,
-					"infras_json":   pjfs.infrasJson,
+					"infras": pjfs.infras,
 				},
 			)
 		}
 		// Pass through messages to the current infrastructure form
 		return pjfs, basic.SignalRouter(
-			pjfs.infras[pjfs.infrasStep],
+			infrasModel[pjfs.infrasStep],
 			basic.Next,
 			basic.MsgParams{
 				"project_info": pjfs.prInfo,
@@ -88,8 +83,7 @@ func (pjfs InfrasForms) Inject(params basic.MsgParams) basic.RouterModel {
 }
 
 func (pjfs InfrasForms) Return(params basic.MsgParams) (basic.RouterModel, tea.Cmd) {
-	pjfs.infrasConfig[pjfs.infrasStep] = params["config"].(project.InfraConfig)
-	pjfs.infrasJson[pjfs.infrasStep] = params["config_json"].(project.JSONInfra)
+	pjfs.infras[pjfs.infrasStep] = params["infra"].(project.Infra)
 	pjfs.infrasStep++
 
 	if pjfs.infrasStep == len(pjfs.infras) {
@@ -97,14 +91,14 @@ func (pjfs InfrasForms) Return(params basic.MsgParams) (basic.RouterModel, tea.C
 			nil,
 			basic.Back,
 			basic.MsgParams{
-				"infras_config": pjfs.infrasConfig,
-				"infras_json":   pjfs.infrasJson,
+				"infras": pjfs.infras,
 			},
 		)
 	}
 
+	infrasModel := pjfs.form.Get("infras").([]basic.RouterModel)
 	return pjfs, basic.SignalRouter(
-		pjfs.infras[pjfs.infrasStep],
+		infrasModel[pjfs.infrasStep],
 		basic.Next,
 		basic.MsgParams{
 			"project_info": pjfs.prInfo,

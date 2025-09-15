@@ -12,8 +12,8 @@ import (
 )
 
 type PostrgesForm struct {
-	config     PostgresConfig
 	jsonConfig *PostgresJSONConfig
+	pjInfo     project.ProjectInfo
 	form       *huh.Form
 }
 
@@ -80,9 +80,8 @@ func (pf PostrgesForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			nil,
 			basic.Back,
 			basic.MsgParams{
-				"ok":          true,
-				"config":      pf.config,
-				"config_json": *pf.jsonConfig,
+				"ok":    true,
+				"infra": NewPostgres(pf.pjInfo, *pf.jsonConfig),
 			},
 		)
 	} else if pf.form.State == huh.StateAborted {
@@ -106,7 +105,7 @@ func (pf PostrgesForm) View() string {
 
 func (pf PostrgesForm) Inject(params basic.MsgParams) basic.RouterModel {
 	projectInfo := params["project_info"].(project.ProjectInfo)
-	pf.config = *NewPostgresConfig(projectInfo)
+	pf.pjInfo = projectInfo
 
 	return pf
 }

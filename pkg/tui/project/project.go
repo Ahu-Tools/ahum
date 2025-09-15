@@ -33,10 +33,9 @@ type ProjectForms struct {
 	statusChan chan string
 	statusDesc string
 
-	level        ProjectLevels
-	prInfo       project.ProjectInfo
-	infrasConfig []project.InfraConfig
-	infrasJson   []project.JSONInfra
+	level  ProjectLevels
+	prInfo project.ProjectInfo
+	infras []project.Infra
 }
 
 func NewProjectForms() ProjectForms {
@@ -113,11 +112,10 @@ func (pjfs ProjectForms) Return(params basic.MsgParams) (basic.RouterModel, tea.
 			nil,
 		)
 	case InfraSetupLevel:
-		pjfs.infrasConfig = params["infras_config"].([]project.InfraConfig)
-		pjfs.infrasJson = params["infras_json"].([]project.JSONInfra)
+		pjfs.infras = params["infras"].([]project.Infra)
 		pjfs.level++
 
-		proj := project.NewProject(pjfs.prInfo, pjfs.infrasConfig, pjfs.infrasJson)
+		proj := project.NewProject(pjfs.prInfo, pjfs.infras)
 
 		return pjfs, tea.Batch(
 			pjfs.spinner.Tick,

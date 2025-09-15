@@ -20,9 +20,8 @@ type ProjectInfo struct {
 }
 
 type Project struct {
-	Info         ProjectInfo
-	InfrasConfig []InfraConfig
-	InfrasJson   []JSONInfra
+	Info   ProjectInfo
+	Infras []Infra
 }
 
 func NewProjectInfo(name, packageName, goVersion, rootPath string) *ProjectInfo {
@@ -34,10 +33,9 @@ func NewProjectInfo(name, packageName, goVersion, rootPath string) *ProjectInfo 
 	}
 }
 
-func NewProject(info ProjectInfo, infrasConfig []InfraConfig, infrasJson []JSONInfra) Project {
+func NewProject(info ProjectInfo, infras []Infra) Project {
 	return Project{
-		Info:         info,
-		InfrasConfig: infrasConfig,
-		InfrasJson:   infrasJson,
+		Info:   info,
+		Infras: infras,
 	}
 }

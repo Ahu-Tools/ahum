@@ -34,7 +34,7 @@ func (p Project) Generate(statusChan chan string) error {
 		return err
 	}
 
-	err = createBasicDirs(genGuide, p.InfrasJson)
+	err = createBasicDirs(genGuide, p.Infras)
 	if err != nil {
 		return err
 	}
@@ -117,7 +117,7 @@ func goFmt(rootPath string) error {
 	return nil
 }
 
-func createBasicDirs(genGuide GenerationGuide, infras []JSONInfra) error {
+func createBasicDirs(genGuide GenerationGuide, infras []Infra) error {
 	err := os.Mkdir(genGuide.RootPath+"/bin", genGuide.DirPerms)
 	if err != nil {
 		return err

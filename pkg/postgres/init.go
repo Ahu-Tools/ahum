@@ -8,7 +8,7 @@ import (
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 )
 
-func (p PostgresConfig) Generate(statusChan chan string, genGuide project.GenerationGuide) error {
+func (p Postgres) Generate(statusChan chan string, genGuide project.GenerationGuide) error {
 	statusChan <- "Generating postgresql directories structure..."
 	err := p.generateBasicDirs(genGuide)
 	if err != nil {
@@ -24,11 +24,11 @@ func (p PostgresConfig) Generate(statusChan chan string, genGuide project.Genera
 	return nil
 }
 
-func (p PostgresConfig) generateBasicDirs(genGuide project.GenerationGuide) error {
+func (p Postgres) generateBasicDirs(genGuide project.GenerationGuide) error {
 	return os.MkdirAll(genGuide.RootPath+"/migrations", genGuide.DirPerms)
 }
 
-func (p PostgresConfig) generateBasicFiles(genGuide project.GenerationGuide) error {
+func (p Postgres) generateBasicFiles(genGuide project.GenerationGuide) error {
 	err := generateConfig(genGuide)
 	if err != nil {
 		return err
