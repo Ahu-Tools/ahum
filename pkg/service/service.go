@@ -52,6 +52,11 @@ func (s Service) Generate(statusChan chan string) error {
 		return err
 	}
 
+	err = s.project.GoSweep(statusChan)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
