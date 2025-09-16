@@ -1,11 +1,10 @@
 package {{.Service.PackageName}}
 
-//Use this file to define your models and their validators
+//Use this file to define your repository interface
 
 {{$name := .Service.Name}}
-{{$repo := print .Service.Name "Repo"}}
 
-type {{$repo}} interface{
+type Repo interface{
     Create({{$name}}) ({{$name}}, error)
     Find({{$name}}) ({{$name}}, error)
     Update({{$name}}) ({{$name}}, error)

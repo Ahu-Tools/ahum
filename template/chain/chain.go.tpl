@@ -1,25 +1,24 @@
 package {{.Service.PackageName}}
 
-{{$chain := print .Service.Name "Chain"}}
-{{$service := print .Service.Name "Service"}}
-{{$repo := print .Service.Name "Repo"}}
+{{$data := print .Service.PackageName "data"}}
+{{$service := print .Service.Name "svc"}}
 
 import (
-	data "{{.PackageName}}/data/{{.Service.PackageName}}"
-	service "{{.PackageName}}/service/{{.Service.PackageName}}"
+	{{$data}} "{{.PackageName}}/data/{{.Service.PackageName}}"
+	{{$service}} "{{.PackageName}}/service/{{.Service.PackageName}}"
 )
 
-type {{$chain}} struct {
-	svc *service.{{$service}}
+type Chain struct {
+	svc *{{$service}}.Service
 }
 
-func New{{$chain}}() *{{$chain}} {
+func NewChain() *Chain {
     //TODO: Initialise an implementation for repo
-	var repo data.{{$repo}}
-	panic("Unimplemented {{$repo}}")
+	var repo {{$data}}.Repo
+	panic("Unimplemented Repo")
 
-	svc := service.New{{$service}}(repo)
-	return &{{$chain}}{
+	svc := {{$service}}.NewService(repo)
+	return &Chain{
 		svc,
 	}
 }

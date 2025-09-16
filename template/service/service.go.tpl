@@ -1,18 +1,17 @@
 package {{.Service.PackageName}}
 
-{{$service := print .Service.Name "Service"}}
-{{$repo := print .Service.Name "Repo"}}
+{{$data := print .Service.PackageName "data"}}
 
 import (
-	data "{{.PackageName}}/data/{{.Service.PackageName}}"
+	{{$data}} "{{.PackageName}}/data/{{.Service.PackageName}}"
 )
 
-type {{$service}} struct {
-	repo data.{{$repo}}
+type Service struct {
+	repo {{$data}}.Repo
 }
 
-func New{{$service}}(repo data.{{$repo}}) *{{$service}} {
-	return &{{$service}}{
+func NewService(repo {{$data}}.Repo) *Service {
+	return &Service{
 		repo,
 	}
 }
