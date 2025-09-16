@@ -31,12 +31,10 @@ Here's a breakdown of the project's development milestones:
 ### 3. Create an Ahu service (chain, service, data) ✅
 
 ### 4. Create an Ahu Edge
-    - 4.1. Connect
-    - 4.2. Gin (default)
+    - 4.1. Gin (default)
+    - 4.2. Connect
+        - 4.1.2. Generate Connect files
     - 4.3. Kafka
-
-### 5. Manage an Ahu edge
-    - 5.1. Generate Connect files
 
 ### 6. Postgres Repo Management
     - 6.1. Gorm GEN
