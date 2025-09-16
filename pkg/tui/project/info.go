@@ -22,13 +22,8 @@ func NewInfoForm() InfoForm {
 	// Remove the "go" prefix to get just the number part
 	versionNumber := strings.TrimPrefix(fullVersionString, "go")
 
-	info := project.NewProjectInfo("", "", versionNumber, ".")
+	info := project.NewProjectInfo("", versionNumber, ".")
 	form := huh.NewForm(huh.NewGroup(
-		huh.NewInput().
-			Title("Enter the name of your new project:").
-			Validate(validateName).
-			Value(&info.Name).
-			Key("name"),
 
 		huh.NewInput().
 			Title("Enter the package name of your new project:").

@@ -1,7 +1,7 @@
 /*
 Copyright © 2025 Sina Sadeghi sina.sadeghi83@gmail.com
 */
-package cmd
+package initialise
 
 import (
 	"github.com/Ahu-Tools/AhuM/pkg/tui/basic"
@@ -11,7 +11,7 @@ import (
 )
 
 // initCmd represents the init command
-var initCmd = &cobra.Command{
+var InitCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialise an Ahu project",
 	Long:  `Create folders and go files related to the main architecture of the Ahu project`,
@@ -27,7 +27,6 @@ var initCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(initCmd)
 
 	// Here you will define your flags and configuration settings.
 

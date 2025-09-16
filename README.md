@@ -28,7 +28,7 @@ Here's a breakdown of the project's development milestones:
     - 2.4. Inject infrastructures configurations loadings to config.go ✅
     - 2.5. Basic infrastructures files generations ✅
 
-### 3. Create an Ahu service (chain, service, data)
+### 3. Create an Ahu service (chain, service, data) ✅
 
 ### 4. Create an Ahu Edge
     - 4.1. Connect

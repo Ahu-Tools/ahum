@@ -23,24 +23,26 @@ func NewGenerationGuide(rootPath string, DirPerms, FilePerms os.FileMode) Genera
 	}
 }
 
+func DefaultGenerationGuide(rootPath string) GenerationGuide {
+	return NewGenerationGuide(rootPath, DefaultDirPerms, DefaultFilePerms)
+}
+
 func (p Project) Generate(statusChan chan string) error {
 	defer close(statusChan)
 
-	genGuide := NewGenerationGuide(p.Info.RootPath, DefaultDirPerms, DefaultFilePerms)
-
 	statusChan <- "Generating project directories structure..."
-	err := os.MkdirAll(genGuide.RootPath, genGuide.DirPerms)
+	err := os.MkdirAll(p.GenGuide.RootPath, p.GenGuide.DirPerms)
 	if err != nil {
 		return err
 	}
 
-	err = createBasicDirs(genGuide, p.Infras)
+	err = createBasicDirs(p.GenGuide, p.Infras)
 	if err != nil {
 		return err
 	}
 
 	statusChan <- "Initialising go.mod file..."
-	err = goInit(genGuide.RootPath, p.Info.PackageName, p.Info.GoVersion)
+	err = p.GoInit()
 	if err != nil {
 		return err
 	}
@@ -58,38 +60,48 @@ func (p Project) Generate(statusChan chan string) error {
 	}
 
 	statusChan <- "Generating infrastructures..."
-	err = p.GenerateInfras(statusChan, genGuide)
+	err = p.GenerateInfras(statusChan)
 	if err != nil {
 		return err
 	}
 
+	err = p.GoSweep(statusChan)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p Project) GoInit() error {
+	return os.WriteFile(p.GenGuide.RootPath+"/go.mod", []byte("module "+p.Info.PackageName+"\n\ngo "+p.Info.GoVersion+"\n"), DefaultFilePerms)
+}
+
+func (p Project) GoSweep(statusChan chan string) error {
 	statusChan <- "Running go mod tidy..."
-	err = goModTidy(genGuide.RootPath)
+	err := p.GoModTidy()
 	if err != nil {
 		return err
 	}
 
 	statusChan <- "Running go mod download..."
-	err = goModDownload(genGuide.RootPath)
+	err = p.GoModDownload()
 	if err != nil {
 		return err
 	}
 
 	statusChan <- "Running go fmt..."
-	err = goFmt(genGuide.RootPath)
+	err = p.GoFmt()
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func goInit(rootPath, packageName, goVersion string) error {
-	return os.WriteFile(rootPath+"/go.mod", []byte("module "+packageName+"\n\ngo "+goVersion+"\n"), DefaultFilePerms)
-}
-
-func goModTidy(rootPath string) error {
+func (p Project) GoModTidy() error {
 	cmd := exec.Command("go", "mod", "tidy")
-	cmd.Dir = rootPath
+	cmd.Dir = p.GenGuide.RootPath
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("go mod tidy failed!\n\nDetails:\n%s", string(output))
@@ -97,9 +109,9 @@ func goModTidy(rootPath string) error {
 	return nil
 }
 
-func goModDownload(rootPath string) error {
+func (p Project) GoModDownload() error {
 	cmd := exec.Command("go", "mod", "download")
-	cmd.Dir = rootPath
+	cmd.Dir = p.GenGuide.RootPath
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("go mod download failed!\n\nDetails:\n%s", string(output))
@@ -107,9 +119,9 @@ func goModDownload(rootPath string) error {
 	return nil
 }
 
-func goFmt(rootPath string) error {
+func (p Project) GoFmt() error {
 	cmd := exec.Command("go", "fmt", "./...")
-	cmd.Dir = rootPath
+	cmd.Dir = p.GenGuide.RootPath
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("go mod fmt failed!\n\nDetails:\n%s", string(output))
