@@ -1,7 +1,7 @@
 package {{.Service.PackageName}}
 
 {{$data := print .Service.PackageName "data"}}
-{{$service := print .Service.Name "svc"}}
+{{$service := print .Service.PackageName "svc"}}
 
 import (
 	{{$data}} "{{.PackageName}}/data/{{.Service.PackageName}}"
