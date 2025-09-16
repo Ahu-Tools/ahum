@@ -42,7 +42,7 @@ func (p Project) Generate(statusChan chan string) error {
 	}
 
 	statusChan <- "Initialising go.mod file..."
-	err = goInit(p.GenGuide.RootPath, p.Info.PackageName, p.Info.GoVersion)
+	err = p.GoInit()
 	if err != nil {
 		return err
 	}
@@ -65,33 +65,43 @@ func (p Project) Generate(statusChan chan string) error {
 		return err
 	}
 
+	err = p.GoSweep(statusChan)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p Project) GoInit() error {
+	return os.WriteFile(p.GenGuide.RootPath+"/go.mod", []byte("module "+p.Info.PackageName+"\n\ngo "+p.Info.GoVersion+"\n"), DefaultFilePerms)
+}
+
+func (p Project) GoSweep(statusChan chan string) error {
 	statusChan <- "Running go mod tidy..."
-	err = goModTidy(p.GenGuide.RootPath)
+	err := p.GoModTidy()
 	if err != nil {
 		return err
 	}
 
 	statusChan <- "Running go mod download..."
-	err = goModDownload(p.GenGuide.RootPath)
+	err = p.GoModDownload()
 	if err != nil {
 		return err
 	}
 
 	statusChan <- "Running go fmt..."
-	err = goFmt(p.GenGuide.RootPath)
+	err = p.GoFmt()
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func goInit(rootPath, packageName, goVersion string) error {
-	return os.WriteFile(rootPath+"/go.mod", []byte("module "+packageName+"\n\ngo "+goVersion+"\n"), DefaultFilePerms)
-}
-
-func goModTidy(rootPath string) error {
+func (p Project) GoModTidy() error {
 	cmd := exec.Command("go", "mod", "tidy")
-	cmd.Dir = rootPath
+	cmd.Dir = p.GenGuide.RootPath
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("go mod tidy failed!\n\nDetails:\n%s", string(output))
@@ -99,9 +109,9 @@ func goModTidy(rootPath string) error {
 	return nil
 }
 
-func goModDownload(rootPath string) error {
+func (p Project) GoModDownload() error {
 	cmd := exec.Command("go", "mod", "download")
-	cmd.Dir = rootPath
+	cmd.Dir = p.GenGuide.RootPath
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("go mod download failed!\n\nDetails:\n%s", string(output))
@@ -109,9 +119,9 @@ func goModDownload(rootPath string) error {
 	return nil
 }
 
-func goFmt(rootPath string) error {
+func (p Project) GoFmt() error {
 	cmd := exec.Command("go", "fmt", "./...")
-	cmd.Dir = rootPath
+	cmd.Dir = p.GenGuide.RootPath
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("go mod fmt failed!\n\nDetails:\n%s", string(output))
