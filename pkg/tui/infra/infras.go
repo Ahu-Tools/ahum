@@ -20,12 +20,7 @@ type InfrasForms struct {
 }
 
 func NewInfrasForms(prInfo project.ProjectInfo) InfrasForms {
-	allInfras := GetInfras()
-	opts := make([]huh.Option[Form], 0, len(allInfras))
-
-	for name, infra := range allInfras {
-		opts = append(opts, huh.NewOption(name, infra))
-	}
+	opts := GetInfras()
 
 	infrasForm := huh.NewForm(huh.NewGroup(
 		huh.NewMultiSelect[Form]().
