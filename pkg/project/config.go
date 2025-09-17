@@ -18,7 +18,6 @@ type Edge interface {
 	Load() (string, error)
 	Name() string
 	JsonConfig() (any, error)
-	StartCode() string
 }
 
 type Infra interface {
