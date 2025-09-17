@@ -8,18 +8,6 @@ import (
 	"strings"
 )
 
-type Edge uint
-type Database uint
-
-const (
-	CONNECT Edge = iota
-	GIN
-)
-
-const (
-	POSTGRES Database = iota
-)
-
 type ProjectInfo struct {
 	PackageName string
 	GoVersion   string
@@ -29,6 +17,7 @@ type ProjectInfo struct {
 type Project struct {
 	Info     ProjectInfo
 	Infras   []Infra
+	Edges    []Edge
 	GenGuide GenerationGuide
 }
 
@@ -40,11 +29,12 @@ func NewProjectInfo(packageName, goVersion, rootPath string) *ProjectInfo {
 	}
 }
 
-func NewProject(info ProjectInfo, infras []Infra) Project {
+func NewProject(info ProjectInfo, infras []Infra, edges []Edge) Project {
 	return Project{
 		Info:     info,
 		Infras:   infras,
 		GenGuide: DefaultGenerationGuide(info.RootPath),
+		Edges:    edges,
 	}
 }
 
@@ -91,8 +81,8 @@ func LoadProject(path string) (*Project, error) {
 		return nil, err
 	}
 
-	// For now, we don't need to load infrastructure configurations
+	// For now, we don't need to load infrastructure and edge configurations
 	// to add a new service. So we can initialize it as empty.
-	project := NewProject(info, []Infra{})
+	project := NewProject(info, []Infra{}, []Edge{})
 	return &project, nil
 }

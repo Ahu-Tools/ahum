@@ -12,6 +12,15 @@ type Config struct {
 	Infras      []Infra
 }
 
+type Edge interface {
+	Generate(chan string, GenerationGuide) error
+	Pkgs() ([]string, error)
+	Load() (string, error)
+	Name() string
+	JsonConfig() (any, error)
+	StartCode() string
+}
+
 type Infra interface {
 	Generate(chan string, GenerationGuide) error
 	Pkgs() ([]string, error)

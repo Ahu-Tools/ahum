@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
+
+	"github.com/Ahu-Tools/AhuM/pkg/util"
 )
 
 const DefaultDirPerms = 0775
@@ -59,6 +62,17 @@ func (p Project) Generate(statusChan chan string) error {
 		return err
 	}
 
+	statusChan <- "Generating edge..."
+	err = p.GenerateEdge()
+	if err != nil {
+		return err
+	}
+
+	err = p.AddEdges(statusChan)
+	if err != nil {
+		return err
+	}
+
 	statusChan <- "Generating infrastructures..."
 	err = p.GenerateInfras(statusChan)
 	if err != nil {
@@ -71,6 +85,11 @@ func (p Project) Generate(statusChan chan string) error {
 	}
 
 	return nil
+}
+
+func (p Project) GenerateEdge() error {
+	edgePath := filepath.Join(p.GenGuide.RootPath, "/edge/edge.go")
+	return util.ParseTemplateFile("template/edge/edge.go.tpl", p.Info, edgePath)
 }
 
 func (p Project) GoInit() error {

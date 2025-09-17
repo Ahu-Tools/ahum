@@ -3,8 +3,8 @@ package postgres
 import (
 	"errors"
 	"strconv"
-	"strings"
 
+	"github.com/Ahu-Tools/AhuM/pkg/postgres"
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 	"github.com/Ahu-Tools/AhuM/pkg/tui/basic"
 	tea "github.com/charmbracelet/bubbletea"
@@ -12,17 +12,17 @@ import (
 )
 
 type PostrgesForm struct {
-	jsonConfig *PostgresJSONConfig
+	jsonConfig *postgres.PostgresJSONConfig
 	pjInfo     project.ProjectInfo
 	form       *huh.Form
 }
 
-func NewPostgresForm() PostrgesForm {
-	jsonConfig := DefaultPostgresJSONConfig()
+func NewPostgresForm() *PostrgesForm {
+	jsonConfig := postgres.DefaultPostgresJSONConfig()
 	form := huh.NewForm(huh.NewGroup(
 		huh.NewInput().
 			Title("Enter your postgres username:").
-			Validate(noEmptyStr).
+			Validate(huh.ValidateNotEmpty()).
 			Value(&jsonConfig.User).
 			Key("user"),
 
@@ -30,20 +30,20 @@ func NewPostgresForm() PostrgesForm {
 			Title("Enter your postgres password:").
 			EchoMode(huh.EchoModePassword).
 			Placeholder("Your password won't be shown").
-			Validate(noEmptyStr).
+			Validate(huh.ValidateNotEmpty()).
 			Value(&jsonConfig.Password).
 			Key("password"),
 
 		huh.NewInput().
 			Title("Enter the database name for your project:").
-			Validate(noEmptyStr).
+			Validate(huh.ValidateNotEmpty()).
 			Value(&jsonConfig.DbName).
 			Key("db_name"),
 
 		huh.NewInput().
 			Title("Enter the hostname of your postgres database:").
 			Placeholder("Default is "+jsonConfig.Host).
-			Validate(noEmptyStr).
+			Validate(huh.ValidateNotEmpty()).
 			Value(&jsonConfig.Host).
 			Key("host"),
 
@@ -57,15 +57,19 @@ func NewPostgresForm() PostrgesForm {
 		huh.NewInput().
 			Title("Enter the sslmode of your postgres connection:").
 			Placeholder("Default is "+jsonConfig.SSLMode).
-			Validate(noEmptyStr).
+			Validate(huh.ValidateNotEmpty()).
 			Value(&jsonConfig.SSLMode).
 			Key("sslmode"),
 	))
 
-	return PostrgesForm{
+	return &PostrgesForm{
 		jsonConfig: jsonConfig,
 		form:       form,
 	}
+}
+
+func (pf *PostrgesForm) InitProjectInfo(p project.ProjectInfo) {
+	pf.pjInfo = p
 }
 
 func (pf PostrgesForm) Init() tea.Cmd {
@@ -75,50 +79,29 @@ func (pf PostrgesForm) Init() tea.Cmd {
 }
 
 func (pf PostrgesForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if pf.form.State == huh.StateCompleted {
-		return pf, basic.SignalRouter(
-			nil,
-			basic.Back,
-			basic.MsgParams{
-				"ok":    true,
-				"infra": NewPostgres(pf.pjInfo, *pf.jsonConfig),
-			},
-		)
-	} else if pf.form.State == huh.StateAborted {
-		return pf, basic.SignalRouter(
-			nil,
-			basic.Back,
-			basic.MsgParams{
-				"ok": false,
-			},
-		)
+	switch pf.form.State {
+	case huh.StateAborted:
+		return pf, basic.SignalError(errors.New("form aborted"))
+	case huh.StateNormal:
+		newForm, cmd := pf.form.Update(msg)
+		pf.form = newForm.(*huh.Form)
+		return pf, cmd
 	}
-	form, cmd := pf.form.Update(msg)
-	pf.form = form.(*huh.Form)
 
-	return pf, cmd
+	//huh form completed
+	return pf, basic.SignalRouter(
+		nil,
+		basic.Back,
+		postgres.NewPostgres(pf.pjInfo, *pf.jsonConfig),
+	)
 }
 
 func (pf PostrgesForm) View() string {
 	return pf.form.View()
 }
 
-func (pf PostrgesForm) Inject(params basic.MsgParams) basic.RouterModel {
-	projectInfo := params["project_info"].(project.ProjectInfo)
-	pf.pjInfo = projectInfo
-
-	return pf
-}
-
-func (pf PostrgesForm) Return(params basic.MsgParams) (basic.RouterModel, tea.Cmd) {
+func (pf PostrgesForm) Return(params tea.Msg) (basic.RouterModel, tea.Cmd) {
 	return pf, nil
-}
-
-func noEmptyStr(s string) error {
-	if strings.TrimSpace(s) == "" {
-		return errors.New("Empty input is not allowed!")
-	}
-	return nil
 }
 
 func checkPortRange(portStr string) error {
