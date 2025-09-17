@@ -94,10 +94,6 @@ func (pjfs ProjectForms) View() string {
 	return style.Render("Generation completed!") + "\n"
 }
 
-func (pjfs ProjectForms) Inject(msg tea.Msg) basic.RouterModel {
-	return pjfs
-}
-
 func (pjfs ProjectForms) Return(msg tea.Msg) (basic.RouterModel, tea.Cmd) {
 	switch msg := msg.(type) {
 	case ProjectInfoMsg:

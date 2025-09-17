@@ -79,10 +79,6 @@ func (m InfoForm) View() string {
 	return m.form.View()
 }
 
-func (info InfoForm) Inject(msg tea.Msg) basic.RouterModel {
-	return info
-}
-
 func (info InfoForm) Return(msg tea.Msg) (basic.RouterModel, tea.Cmd) {
 	return info, nil
 }
