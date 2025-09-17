@@ -15,13 +15,6 @@ import (
 
 type ProjectLevel uint
 
-// statusUpdateMsg is sent for each status update from the generation process
-type statusUpdateMsg string
-
-type genStatus struct {
-	err error
-}
-
 const (
 	ProjectInfoLevel = iota
 	EdgeSetupLevel
