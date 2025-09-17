@@ -52,16 +52,6 @@ func (inf InfrasForms) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	//huh form completed
-
-	if inf.infrasStep == len(inf.infras) {
-		return inf, basic.SignalRouter(
-			nil,
-			basic.Back,
-			InfrasMsg{
-				Infras: inf.infras,
-			},
-		)
-	}
 	newInf, cmd := inf.goToForm()
 	return newInf, cmd
 }
