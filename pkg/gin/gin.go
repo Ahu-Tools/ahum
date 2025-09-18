@@ -89,12 +89,7 @@ func (g *Gin) AddHandler(versionName, entityName, handlerName string, genGuide p
 	handlerName = strcase.ToCamel(handlerName)
 	entityName = strcase.ToLowerCamel(entityName)
 	versionName = strcase.ToLowerCamel(versionName)
-
 	eHandlerPath := filepath.Join(genGuide.RootPath, versionName, entityName, "/handler.go")
-	handlerData, err := os.ReadFile(eHandlerPath)
-	if err != nil {
-		return err
-	}
 
 	insertions := map[string]string{
 		"handlers": fmt.Sprintf(
@@ -106,12 +101,7 @@ func (g *Gin) AddHandler(versionName, entityName, handlerName string, genGuide p
 			handlerName),
 	}
 
-	newFile, err := util.ModifyCodeByMarkers(handlerData, insertions)
-	if err != nil {
-		return err
-	}
-
-	err = os.WriteFile(eHandlerPath, newFile, genGuide.FilePerms)
+	err := util.ModifyCodeByMarkersFile(eHandlerPath, insertions, genGuide.FilePerms)
 	if err != nil {
 		return err
 	}
@@ -122,20 +112,10 @@ func (g *Gin) AddHandler(versionName, entityName, handlerName string, genGuide p
 func (g *Gin) RegisterHandler(versionName, entityName, handlerName string, genGuide project.GenerationGuide) error {
 	eRoutePath := filepath.Join(genGuide.RootPath, versionName, entityName, "/route.go")
 
-	routeData, err := os.ReadFile(eRoutePath)
-	if err != nil {
-		return err
-	}
-
 	insertions := map[string]string{
 		"routes": fmt.Sprintf(`r.GET("/%s", h.%s)`, strcase.ToKebab(handlerName), handlerName),
 	}
-	newFile, err := util.ModifyCodeByMarkers(routeData, insertions)
-	if err != nil {
-		return err
-	}
-
-	return os.WriteFile(eRoutePath, newFile, genGuide.FilePerms)
+	return util.ModifyCodeByMarkersFile(eRoutePath, insertions, genGuide.FilePerms)
 }
 
 func (g *Gin) AddEntity(versionName, entityName string, genGuide project.GenerationGuide) error {
@@ -169,22 +149,12 @@ func (g *Gin) AddEntity(versionName, entityName string, genGuide project.Generat
 func (g *Gin) RegisterEntity(versionName, entityName string, genGuide project.GenerationGuide) error {
 	vRegPath := filepath.Join(genGuide.RootPath, versionName, "/registrar.go")
 
-	regData, err := os.ReadFile(vRegPath)
-	if err != nil {
-		return err
-	}
-
 	insertions := map[string]string{
 		"imports":  fmt.Sprintf("\"%s/edge/gin/%s/%s\"", g.pj.PackageName, versionName, entityName),
 		"entities": fmt.Sprintf("%s.RegisterRoutes(r.Group(\"%s\"))", entityName, strcase.ToKebab(entityName)),
 	}
 
-	newRegData, err := util.ModifyCodeByMarkers(regData, insertions)
-	if err != nil {
-		return err
-	}
-
-	return os.WriteFile(vRegPath, newRegData, genGuide.FilePerms)
+	return util.ModifyCodeByMarkersFile(vRegPath, insertions, genGuide.FilePerms)
 }
 
 func (g *Gin) AddVersion(versionName string, genGuide project.GenerationGuide) error {
@@ -212,20 +182,11 @@ func (g *Gin) AddVersion(versionName string, genGuide project.GenerationGuide) e
 
 func (g *Gin) RegisterVersion(versionName string, genGuide project.GenerationGuide) error {
 	ginPath := filepath.Join(genGuide.RootPath, "gin.go")
-	regData, err := os.ReadFile(ginPath)
-	if err != nil {
-		return err
-	}
 
 	insertions := map[string]string{
 		"imports":  fmt.Sprintf("\"%s/edge/gin/%s\"", g.pj.PackageName, versionName),
 		"versions": fmt.Sprintf("%s.RegisterVersion(r.Group(\"%s\"))", versionName, versionName),
 	}
 
-	newRegData, err := util.ModifyCodeByMarkers(regData, insertions)
-	if err != nil {
-		return err
-	}
-
-	return os.WriteFile(ginPath, newRegData, genGuide.FilePerms)
+	return util.ModifyCodeByMarkersFile(ginPath, insertions, genGuide.FilePerms)
 }

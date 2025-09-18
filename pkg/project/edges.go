@@ -1,6 +1,7 @@
 package project
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -35,20 +36,11 @@ func (p *Project) AddEdge(edge Edge, statusChan chan string) error {
 
 func (p *Project) addEdgeToStart(edge Edge) error {
 	path := filepath.Join(p.GenGuide.RootPath, "/edge/edge.go")
-	file, err := os.ReadFile(path)
-	if err != nil {
-		return err
-	}
 
 	insertions := map[string]string{
-		"imports": "\"" + p.Info.PackageName + "/edge/" + edge.Name() + "\"\n",
-		"edges":   edge.Name() + ".New(),\n",
+		"imports": fmt.Sprintf(`"%s/edge/%s"`, p.Info.PackageName, edge.Name()),
+		"edges":   edge.Name() + ".New(),",
 	}
 
-	newFile, err := util.ModifyCodeByMarkers(file, insertions)
-	if err != nil {
-		return err
-	}
-
-	return os.WriteFile(path, newFile, p.GenGuide.FilePerms)
+	return util.ModifyCodeByMarkersFile(path, insertions, p.GenGuide.FilePerms)
 }
