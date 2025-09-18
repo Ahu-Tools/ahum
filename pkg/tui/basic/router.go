@@ -128,7 +128,6 @@ func (m Router) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case BackAndNext:
 			m.main = msg.model
-			m.main = msg.model
 			cmd := m.main.Init()
 			if msg.msg == nil {
 				return m, cmd
@@ -145,10 +144,11 @@ func (m Router) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Router) View() string {
 	str := m.main.View()
 	if m.err != nil {
-		str = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF0000")).Render("Error: ") + m.err.Error()
+		str = lipgloss.NewStyle().Foreground(lipgloss.Color(util.ErrorColor)).Render("Error: " + m.err.Error())
+		if m.quitting {
+			str += "\nquitting"
+		}
 	}
-	if m.quitting {
-		str += "\n\nquitting\n"
-	}
+
 	return str
 }
