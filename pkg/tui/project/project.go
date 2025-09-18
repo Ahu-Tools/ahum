@@ -1,8 +1,6 @@
 package project
 
 import (
-	"fmt"
-
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 	"github.com/Ahu-Tools/AhuM/pkg/tui/basic"
 	"github.com/Ahu-Tools/AhuM/pkg/tui/edge"
@@ -40,7 +38,7 @@ func (pjfs ProjectForms) Init() tea.Cmd {
 func (pjfs ProjectForms) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	level, ok := msg.(ProjectLevel)
 	if !ok {
-		return pjfs, basic.SignalError(fmt.Errorf("unexpected message type: %T", msg))
+		return pjfs, nil
 	}
 
 	switch level {
