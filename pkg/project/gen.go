@@ -68,6 +68,7 @@ func (p Project) Generate(statusChan chan string) error {
 		return err
 	}
 
+	statusChan <- "Adding edge..."
 	err = p.AddEdges(statusChan)
 	if err != nil {
 		return err
