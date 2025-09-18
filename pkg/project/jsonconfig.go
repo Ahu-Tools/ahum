@@ -16,17 +16,12 @@ type Server struct {
 	Port string `json:"port"`
 }
 
-type Api struct {
-	Server Server `json:"server"`
-}
-
 type App struct {
 	SecretKey string `json:"secret_key"`
 }
 
 type ConfigJSON struct {
 	App    App       `json:"app"`
-	Api    Api       `json:"api"`
 	Infras InfraList `json:"infras"`
 	Edges  EdgeList  `json:"edges"`
 }
@@ -47,16 +42,8 @@ func (p *Project) GenerateJSONConfig() error {
 		SecretKey: secretKey,
 	}
 
-	api := Api{
-		Server: Server{
-			Host: "0.0.0.0",
-			Port: "8080",
-		},
-	}
-
 	data := ConfigJSON{
 		App:    app,
-		Api:    api,
 		Infras: infras,
 		Edges:  edges,
 	}
