@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+const MODIFIER_PREFIX = "//@ahum:"
+
 // ModifyCodeByMarkers finds special marker comments in Go source code and inserts
 // new code on the line just before the marker.
 //
@@ -24,10 +26,9 @@ import (
 //	An error if parsing fails or if any of the specified markers are not found in the source.
 func ModifyCodeByMarkers(src []byte, insertions map[string]string) ([]byte, error) {
 	// Validate that all markers are actual comments
+	cleanInsertions := make(map[string]string)
 	for marker := range insertions {
-		if !strings.HasPrefix(strings.TrimSpace(marker), "//") {
-			return nil, fmt.Errorf("invalid marker: '%s' is not a valid Go comment", marker)
-		}
+		cleanInsertions[strings.TrimSpace(marker)] = insertions[marker]
 	}
 
 	fset := token.NewFileSet()
@@ -43,8 +44,11 @@ func ModifyCodeByMarkers(src []byte, insertions map[string]string) ([]byte, erro
 	for _, commentGroup := range file.Comments {
 		for _, comment := range commentGroup.List {
 			trimmedComment := strings.TrimSpace(comment.Text)
+			cleanComment := strings.ReplaceAll(trimmedComment, " ", "")
+			cleanComment = strings.ToLower(cleanComment)
+			cleanComment = strings.TrimPrefix(cleanComment, MODIFIER_PREFIX)
 
-			if newCode, ok := insertions[trimmedComment]; ok {
+			if newCode, ok := cleanInsertions[cleanComment]; ok {
 				pos := comment.Pos()
 				offset := fset.File(pos).Offset(pos)
 
@@ -68,15 +72,15 @@ func ModifyCodeByMarkers(src []byte, insertions map[string]string) ([]byte, erro
 				replacementTextBuilder.WriteString(trimmedComment)
 
 				replacements[lineStart] = replacementTextBuilder.String()
-				foundMarkers[trimmedComment] = true
+				foundMarkers[cleanComment] = true
 			}
 		}
 	}
 
 	// Verify that all requested markers were found.
-	if len(foundMarkers) != len(insertions) {
+	if len(foundMarkers) != len(cleanInsertions) {
 		var missing []string
-		for marker := range insertions {
+		for marker := range cleanInsertions {
 			if !foundMarkers[marker] {
 				missing = append(missing, marker)
 			}
