@@ -7,6 +7,12 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 
+	{{ range .Edges}}
+		{{ range .Pkgs}}
+	"{{.}}"
+		{{end}}
+	{{ end }}
+
 	{{ range .Infras}}
 		{{ range .Pkgs}}
 	"{{.}}"
@@ -52,6 +58,9 @@ func CheckConfigs() {
 }
 
 func ConfigInfras() error {
+	{{ range .Edges}}
+	{{.Load}}
+	{{ end }}
 
 	{{ range .Infras}}
 	{{.Load}}
