@@ -11,13 +11,16 @@ import (
 	"github.com/charmbracelet/huh"
 )
 
+type DoneFormMsg struct{}
+type AbortedFormMsg struct{}
+
 type PostrgesForm struct {
 	jsonConfig *postgres.PostgresJSONConfig
 	pjInfo     project.ProjectInfo
 	form       *huh.Form
 }
 
-func NewPostgresForm() *PostrgesForm {
+func NewPostgresForm(p project.ProjectInfo) *PostrgesForm {
 	jsonConfig := postgres.DefaultPostgresJSONConfig()
 	form := huh.NewForm(huh.NewGroup(
 		huh.NewInput().
@@ -62,38 +65,36 @@ func NewPostgresForm() *PostrgesForm {
 			Key("sslmode"),
 	))
 
+	form.SubmitCmd = func() tea.Msg { return DoneFormMsg{} }
+	form.CancelCmd = func() tea.Msg { return AbortedFormMsg{} }
+
 	return &PostrgesForm{
 		jsonConfig: jsonConfig,
 		form:       form,
-	}
-}
 
-func (pf *PostrgesForm) InitProjectInfo(p project.ProjectInfo) {
-	pf.pjInfo = p
+		pjInfo: p,
+	}
 }
 
 func (pf PostrgesForm) Init() tea.Cmd {
-	return tea.Batch(pf.form.Init(), func() tea.Msg {
-		return tea.KeyMsg{Type: tea.KeyEnter}
-	})
+	return pf.form.Init()
 }
 
 func (pf PostrgesForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch pf.form.State {
-	case huh.StateAborted:
+	switch msg.(type) {
+	case DoneFormMsg:
+		return pf, basic.SignalRouter(
+			nil,
+			basic.Back,
+			postgres.NewPostgres(pf.pjInfo, *pf.jsonConfig),
+		)
+	case AbortedFormMsg:
 		return pf, basic.SignalError(errors.New("form aborted"))
-	case huh.StateNormal:
-		newForm, cmd := pf.form.Update(msg)
-		pf.form = newForm.(*huh.Form)
-		return pf, cmd
 	}
 
-	//huh form completed
-	return pf, basic.SignalRouter(
-		nil,
-		basic.Back,
-		postgres.NewPostgres(pf.pjInfo, *pf.jsonConfig),
-	)
+	newForm, cmd := pf.form.Update(msg)
+	pf.form = newForm.(*huh.Form)
+	return pf, cmd
 }
 
 func (pf PostrgesForm) View() string {

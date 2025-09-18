@@ -9,7 +9,8 @@ import (
 	"github.com/charmbracelet/huh"
 )
 
-type CompletedInfra struct{}
+type NextFormMsg struct{}
+type AbortedFormMsg struct{}
 
 type InfrasForms struct {
 	form *huh.Form
@@ -20,14 +21,17 @@ type InfrasForms struct {
 }
 
 func NewInfrasForms(prInfo project.ProjectInfo) InfrasForms {
-	opts := GetInfras()
+	opts := GetInfras(prInfo)
 
 	infrasForm := huh.NewForm(huh.NewGroup(
-		huh.NewMultiSelect[Form]().
+		huh.NewMultiSelect[basic.RouterModel]().
 			Options(opts...).
 			Title("Select infrastructures you want to add to your project:").
 			Key("infras"),
 	))
+
+	infrasForm.SubmitCmd = func() tea.Msg { return NextFormMsg{} }
+	infrasForm.CancelCmd = func() tea.Msg { return AbortedFormMsg{} }
 
 	return InfrasForms{
 		form: infrasForm,
@@ -42,22 +46,21 @@ func (inf InfrasForms) Init() tea.Cmd {
 }
 
 func (inf InfrasForms) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch inf.form.State {
-	case huh.StateAborted:
+	switch msg.(type) {
+	case AbortedFormMsg:
 		return inf, basic.SignalError(errors.New("form aborted"))
-	case huh.StateNormal:
-		newForm, cmd := inf.form.Update(msg)
-		inf.form = newForm.(*huh.Form)
-		return inf, cmd
+	case NextFormMsg:
+		newInf, cmd := inf.goToForm()
+		return newInf, cmd
 	}
 
-	//huh form completed
-	newInf, cmd := inf.goToForm()
-	return newInf, cmd
+	newForm, cmd := inf.form.Update(msg)
+	inf.form = newForm.(*huh.Form)
+	return inf, cmd
 }
 
 func (inf InfrasForms) goToForm() (InfrasForms, tea.Cmd) {
-	infrasModel := inf.form.Get("infras").([]Form)
+	infrasModel := inf.form.Get("infras").([]basic.RouterModel)
 	if inf.infrasStep == 0 {
 		inf.infras = make([]project.Infra, len(infrasModel))
 	}
@@ -72,11 +75,8 @@ func (inf InfrasForms) goToForm() (InfrasForms, tea.Cmd) {
 		)
 	}
 
-	infraModel := infrasModel[inf.infrasStep]
-	infraModel.InitProjectInfo(inf.prInfo)
-
 	return inf, basic.SignalRouter(
-		infraModel,
+		infrasModel[inf.infrasStep],
 		basic.Next,
 		nil,
 	)
@@ -93,7 +93,7 @@ func (inf InfrasForms) Return(msg tea.Msg) (basic.RouterModel, tea.Cmd) {
 		inf.infrasStep++
 
 		return inf, func() tea.Msg {
-			return CompletedInfra{}
+			return NextFormMsg{}
 		}
 	case error:
 		return inf, basic.SignalError(msg)
