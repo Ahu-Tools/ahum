@@ -9,6 +9,7 @@ import (
 )
 
 type InfraList map[string]interface{}
+type EdgeList map[string]interface{}
 
 type Server struct {
 	Host string `json:"host"`
@@ -27,10 +28,16 @@ type ConfigJSON struct {
 	App    App       `json:"app"`
 	Api    Api       `json:"api"`
 	Infras InfraList `json:"infras"`
+	Edges  EdgeList  `json:"edges"`
 }
 
 func (p *Project) GenerateJSONConfig() error {
 	infras, err := p.getInfrasConfig()
+	if err != nil {
+		return err
+	}
+
+	edges, err := p.getEdgesConfig()
 	if err != nil {
 		return err
 	}
@@ -51,6 +58,7 @@ func (p *Project) GenerateJSONConfig() error {
 		App:    app,
 		Api:    api,
 		Infras: infras,
+		Edges:  edges,
 	}
 
 	f, err := os.Create(p.Info.RootPath + "/config.json")
@@ -66,6 +74,19 @@ func (p *Project) GenerateJSONConfig() error {
 
 	_, err = f.Write(jsonData)
 	return err
+}
+
+func (p *Project) getEdgesConfig() (EdgeList, error) {
+	edges := make(EdgeList)
+	for _, edge := range p.Edges {
+		edgeJson, err := edge.JsonConfig()
+		if err != nil {
+			return nil, fmt.Errorf("failed to load edge config: %e", err)
+		}
+		edges[edge.Name()] = edgeJson
+	}
+
+	return edges, nil
 }
 
 func (p *Project) getInfrasConfig() (InfraList, error) {

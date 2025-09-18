@@ -10,6 +10,7 @@ type Config struct {
 	PackageName string
 	Pkgs        []string
 	Infras      []Infra
+	Edges       []Edge
 }
 
 type Edge interface {
@@ -32,6 +33,7 @@ func (p *Project) GenerateConfig() error {
 	config := Config{
 		PackageName: p.Info.PackageName,
 		Infras:      p.Infras,
+		Edges:       p.Edges,
 	}
 
 	tmplPath := "template/config/config.go.tpl"
