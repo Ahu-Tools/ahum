@@ -45,6 +45,7 @@ func NewLoader(spinType spinner.Spinner, task LoaderTask) Loader {
 func (l Loader) Init() tea.Cmd {
 	return tea.Batch(
 		l.spinner.Tick,
+		l.updateStatus,
 		l.loadTask,
 	)
 }
