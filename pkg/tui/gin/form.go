@@ -16,7 +16,7 @@ type Form struct {
 	pj project.ProjectInfo
 }
 
-func NewForm() *Form {
+func NewForm(pj project.ProjectInfo) *Form {
 	form := huh.NewForm(huh.NewGroup(
 		huh.NewInput().
 			Title("Enter your gin server host:").
@@ -31,11 +31,8 @@ func NewForm() *Form {
 
 	return &Form{
 		form: form,
+		pj:   pj,
 	}
-}
-
-func (f *Form) InitProjectInfo(pj project.ProjectInfo) {
-	f.pj = pj
 }
 
 func (f Form) Init() tea.Cmd {

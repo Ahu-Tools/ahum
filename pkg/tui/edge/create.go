@@ -1,6 +1,8 @@
 package edge
 
 import (
+	"errors"
+
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 	"github.com/Ahu-Tools/AhuM/pkg/tui/basic"
 	"github.com/Ahu-Tools/AhuM/pkg/util"
@@ -10,36 +12,41 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+type SelectedEdge struct{}
+type AbortedSelectionEdge struct{}
 type FormCompleted struct{}
 type CreationCompleted struct{}
 
 type CreateForm struct {
 	quitting bool
 
-	form    *huh.Form
-	prjPath string
-	prj     *project.Project
-	edge    project.Edge
+	form *huh.Form
+	prj  *project.Project
+	edge project.Edge
 }
 
-func NewForm(prjPath string) *CreateForm {
-	edges := GetEdges()
+func NewForm(prjPath string) (*CreateForm, error) {
+	prj, err := project.LoadProject(prjPath)
+	if err != nil {
+		return nil, err
+	}
+
+	edges := GetEdges(prj.Info)
 	form := huh.NewForm(huh.NewGroup(
-		huh.NewSelect[Form]().
+		huh.NewSelect[basic.RouterModel]().
 			Options(edges...).
 			Title("Select the edge you want to add to your project:").
 			Key("edge"),
 	))
 
-	s := spinner.New()
-	s.Spinner = spinner.Moon
-	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
+	form.SubmitCmd = func() tea.Msg { return SelectedEdge{} }
+	form.CancelCmd = func() tea.Msg { return AbortedSelectionEdge{} }
 
 	return &CreateForm{
 		form: form,
 
-		prjPath: prjPath,
-	}
+		prj: prj,
+	}, nil
 }
 
 func (c CreateForm) Init() tea.Cmd {
@@ -47,20 +54,17 @@ func (c CreateForm) Init() tea.Cmd {
 }
 
 func (c CreateForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch c.form.State {
-	case huh.StateNormal:
-		model, cmd := c.form.Update(msg)
-		c.form = model.(*huh.Form)
-		return c, cmd
-	case huh.StateAborted:
+	switch msg.(type) {
+	case SelectedEdge:
+		edgesModel := c.form.Get("edge").(basic.RouterModel)
+
 		return c, basic.SignalRouter(
-			nil,
-			basic.Back,
+			edgesModel,
+			basic.Next,
 			nil,
 		)
-	}
-
-	switch msg.(type) {
+	case AbortedSelectionEdge:
+		return c, basic.SignalError(errors.New("edge selection aborted"))
 	case FormCompleted:
 		return c, basic.SignalRouter(
 			basic.NewLoader(
@@ -77,22 +81,9 @@ func (c CreateForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return c, basic.SignalQuit()
 	}
 
-	//Select edge form is completed
-	pr, err := project.LoadProject(c.prjPath)
-	if err != nil {
-		return c, basic.SignalError(err)
-	}
-	c.prj = pr
-
-	edgesModel := c.form.Get("edge").(Form)
-	edgesModel.InitProjectInfo(pr.Info)
-
-	// Pass messages to the selected edge form
-	return c, basic.SignalRouter(
-		edgesModel,
-		basic.Next,
-		nil,
-	)
+	model, cmd := c.form.Update(msg)
+	c.form = model.(*huh.Form)
+	return c, cmd
 }
 
 func (c CreateForm) View() string {

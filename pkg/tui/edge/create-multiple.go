@@ -9,6 +9,9 @@ import (
 	"github.com/charmbracelet/huh"
 )
 
+type NextFormMsg struct{}
+type AbortedFormMsg struct{}
+
 type EdgesForms struct {
 	form *huh.Form
 
@@ -18,14 +21,17 @@ type EdgesForms struct {
 }
 
 func NewEdgesForms(prInfo project.ProjectInfo) EdgesForms {
-	opts := GetEdges()
+	opts := GetEdges(prInfo)
 
 	edgesForm := huh.NewForm(huh.NewGroup(
-		huh.NewMultiSelect[Form]().
+		huh.NewMultiSelect[basic.RouterModel]().
 			Options(opts...).
 			Title("Select edges you want to add to your project:").
 			Key("edges"),
 	))
+
+	edgesForm.CancelCmd = func() tea.Msg { return AbortedFormMsg{} }
+	edgesForm.SubmitCmd = func() tea.Msg { return NextFormMsg{} }
 
 	return EdgesForms{
 		form: edgesForm,
@@ -40,26 +46,25 @@ func (ef EdgesForms) Init() tea.Cmd {
 }
 
 func (ef EdgesForms) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch ef.form.State {
-	case huh.StateAborted:
+	switch msg.(type) {
+	case AbortedFormMsg:
 		return ef, basic.SignalError(errors.New("form aborted"))
-	case huh.StateNormal:
-		newForm, cmd := ef.form.Update(msg)
-		ef.form = newForm.(*huh.Form)
+	case NextFormMsg:
+		ef, cmd := ef.goToForm()
 		return ef, cmd
 	}
 
-	//Form is completed
-	updatedEf, cmd := ef.goToForm()
-	return updatedEf, cmd
+	newForm, cmd := ef.form.Update(msg)
+	ef.form = newForm.(*huh.Form)
+	return ef, cmd
 }
 
 func (ef EdgesForms) View() string {
 	return ef.form.View()
 }
 
-func (ef EdgesForms) goToForm() (tea.Model, tea.Cmd) {
-	edgesModel := ef.form.Get("edges").([]Form)
+func (ef EdgesForms) goToForm() (EdgesForms, tea.Cmd) {
+	edgesModel := ef.form.Get("edges").([]basic.RouterModel)
 	if ef.edgesStep == 0 {
 		ef.edges = make([]project.Edge, len(edgesModel))
 	}
@@ -75,12 +80,8 @@ func (ef EdgesForms) goToForm() (tea.Model, tea.Cmd) {
 		)
 	}
 
-	// Pass through messages to the current edge form
-	edgeModel := edgesModel[ef.edgesStep]
-	edgeModel.InitProjectInfo(ef.prInfo)
-
 	return ef, basic.SignalRouter(
-		edgeModel,
+		edgesModel[ef.edgesStep],
 		basic.Next,
 		nil,
 	)
@@ -91,7 +92,7 @@ func (ef EdgesForms) Return(msg tea.Msg) (basic.RouterModel, tea.Cmd) {
 		ef.edges[ef.edgesStep] = edge
 		ef.edgesStep++
 
-		return ef, func() tea.Msg { return msg }
+		return ef, func() tea.Msg { return NextFormMsg{} }
 	}
 	err := errors.New("edge form didn't completed")
 	if msg, ok := msg.(error); ok {

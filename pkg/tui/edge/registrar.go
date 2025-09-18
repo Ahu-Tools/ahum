@@ -1,12 +1,14 @@
 package edge
 
 import (
+	"github.com/Ahu-Tools/AhuM/pkg/project"
+	"github.com/Ahu-Tools/AhuM/pkg/tui/basic"
 	"github.com/Ahu-Tools/AhuM/pkg/tui/gin"
 	"github.com/charmbracelet/huh"
 )
 
-func GetEdges() []huh.Option[Form] {
-	return []huh.Option[Form]{
-		huh.NewOption[Form]("gin", gin.NewForm()),
+func GetEdges(pj project.ProjectInfo) []huh.Option[basic.RouterModel] {
+	return []huh.Option[basic.RouterModel]{
+		huh.NewOption[basic.RouterModel]("gin", gin.NewForm(pj)),
 	}
 }
