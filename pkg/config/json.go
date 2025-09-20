@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -11,6 +12,7 @@ import (
 )
 
 type ConfigMap map[string]interface{}
+type RegisterMap map[string]string
 
 type App struct {
 	SecretKey string `json:"secret_key"`
@@ -24,14 +26,18 @@ func (c Config) GenerateJSON(statusChan chan string, genGuide gen.Guide) error {
 		SecretKey: secretKey,
 	}
 	configMap["app"] = app
+	regMap := make(RegisterMap)
 
 	for _, cfGroup := range c.ConfigGroups {
 		groupConfig := make(ConfigMap)
 		for _, cfg := range cfGroup.GetConfigurables() {
 			groupConfig[cfg.Name()] = cfg.JsonConfig()
+			regMap[cfg.Name()] = fmt.Sprintf("%s.%s", cfGroup.Name(), cfg.Name())
 		}
 		configMap[cfGroup.Name()] = groupConfig
 	}
+
+	configMap["registrar"] = regMap
 
 	configPath := filepath.Join(genGuide.RootPath, "config.json")
 	f, err := os.Create(configPath)
