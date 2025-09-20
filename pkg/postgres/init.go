@@ -25,7 +25,7 @@ func (p Postgres) Generate(statusChan chan string, genGuide project.GenerationGu
 }
 
 func (p Postgres) generateBasicDirs(genGuide project.GenerationGuide) error {
-	return os.MkdirAll(genGuide.RootPath+"/migrations", genGuide.DirPerms)
+	return os.Mkdir(genGuide.RootPath+"/migrations", genGuide.DirPerms)
 }
 
 func (p Postgres) generateBasicFiles(genGuide project.GenerationGuide) error {
