@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 	"github.com/Ahu-Tools/AhuM/pkg/util"
@@ -98,8 +97,8 @@ func (g *Connect) Generate(status chan string, genGuide project.GenerationGuide)
 }
 
 func (g *Connect) AddMethod(methodName, serviceName, versionName string, genGuide project.GenerationGuide) error {
-	svcName := strings.ToLower(serviceName)
-	vName := strings.ToLower(versionName)
+	svcName := util.ToPkgName(serviceName)
+	vName := util.ToPkgName(versionName)
 	methName := strcase.ToCamel(methodName)
 
 	payload := map[string]any{
@@ -133,7 +132,7 @@ func (g *Connect) implementMethod(serviceName, versionName, methodName string, g
 		"VersionName": versionName,
 		"PackageName": g.pj.PackageName,
 		"MethodName":  methodName,
-		"Lowerer":     strings.ToLower,
+		"Lowerer":     util.ToPkgName,
 	}
 	method, _ := util.ParseTemplateString("template/connect/method.go.tpl", payload)
 	edgePath := filepath.Join(genGuide.RootPath, serviceName, versionName, "edge.go")
@@ -145,8 +144,8 @@ func (g *Connect) implementMethod(serviceName, versionName, methodName string, g
 }
 
 func (g *Connect) AddVersion(versionName, serviceName string, genGuide project.GenerationGuide) error {
-	svcName := strings.ToLower(serviceName)
-	vName := strings.ToLower(versionName)
+	svcName := util.ToPkgName(serviceName)
+	vName := util.ToPkgName(versionName)
 	vPath := filepath.Join(genGuide.RootPath, svcName, vName)
 
 	err := os.Mkdir(vPath, genGuide.DirPerms)
@@ -159,7 +158,7 @@ func (g *Connect) AddVersion(versionName, serviceName string, genGuide project.G
 		"VersionName": versionName,
 		"PackageName": g.pj.PackageName,
 		"Snaker":      func(s string) string { return strcase.ToSnakeWithIgnore(s, ".") },
-		"Lowerer":     strings.ToLower,
+		"Lowerer":     util.ToPkgName,
 	}
 
 	protoPath := filepath.Join(vPath, strcase.ToSnakeWithIgnore(serviceName, ".")+".proto")
@@ -199,8 +198,8 @@ func (g *Connect) BufGenerate(genGuide project.GenerationGuide) error {
 }
 
 func (g *Connect) registerVersion(serviceName, versionName string, genGuide project.GenerationGuide) error {
-	svcName := strings.ToLower(serviceName)
-	vName := strings.ToLower(versionName)
+	svcName := util.ToPkgName(serviceName)
+	vName := util.ToPkgName(versionName)
 	regPath := filepath.Join(genGuide.RootPath, svcName, "registrar.go")
 	insertions := map[string]string{
 		"imports":  fmt.Sprintf(`%s "%s/edge/connect/%s/%s"`, vName, g.pj.PackageName, svcName, vName),
@@ -211,7 +210,7 @@ func (g *Connect) registerVersion(serviceName, versionName string, genGuide proj
 }
 
 func (g *Connect) AddService(serviceName string, genGuide project.GenerationGuide) error {
-	svcName := strings.ToLower(serviceName)
+	svcName := util.ToPkgName(serviceName)
 	svcPath := filepath.Join(genGuide.RootPath, svcName)
 
 	err := os.Mkdir(svcPath, genGuide.DirPerms)
@@ -222,7 +221,7 @@ func (g *Connect) AddService(serviceName string, genGuide project.GenerationGuid
 	svcRegPath := filepath.Join(svcPath, "registrar.go")
 	payload := map[string]any{
 		"ServiceName": serviceName,
-		"Lowerer":     strings.ToLower,
+		"Lowerer":     util.ToPkgName,
 	}
 
 	err = util.ParseTemplateFile("template/connect/service.registrar.go.tpl", payload, svcRegPath)
@@ -234,7 +233,7 @@ func (g *Connect) AddService(serviceName string, genGuide project.GenerationGuid
 }
 
 func (g *Connect) registerService(serviceName string, genGuide project.GenerationGuide) error {
-	svcName := strings.ToLower(serviceName)
+	svcName := util.ToPkgName(serviceName)
 	regPath := filepath.Join(genGuide.RootPath, "connect.go")
 	insertions := map[string]string{
 		"imports":  fmt.Sprintf(`"%s/edge/%s/%s"`, g.pj.PackageName, g.Name(), svcName),
