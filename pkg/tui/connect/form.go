@@ -10,6 +10,9 @@ import (
 	"github.com/charmbracelet/huh"
 )
 
+type DoneFormMsg struct{}
+type AbortedFormMsg struct{}
+
 type Form struct {
 	form *huh.Form
 
@@ -29,6 +32,9 @@ func NewForm(pj project.ProjectInfo) *Form {
 			Key("port"),
 	))
 
+	form.SubmitCmd = func() tea.Msg { return DoneFormMsg{} }
+	form.CancelCmd = func() tea.Msg { return AbortedFormMsg{} }
+
 	return &Form{
 		form: form,
 		pj:   pj,
@@ -40,11 +46,8 @@ func (f Form) Init() tea.Cmd {
 }
 
 func (f Form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	model, cmd := f.form.Update(msg)
-	f.form = model.(*huh.Form)
-
-	switch f.form.State {
-	case huh.StateCompleted:
+	switch msg.(type) {
+	case DoneFormMsg:
 		host := f.form.Get("host").(string)
 		port := f.form.Get("port").(string)
 		return f, basic.SignalRouter(
@@ -52,9 +55,12 @@ func (f Form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			basic.Back,
 			connect.NewConnect(&f.pj, connect.ConnectConfig{Server: connect.ConnectServer{Host: host, Port: port}}),
 		)
-	case huh.StateAborted:
+	case AbortedFormMsg:
 		return f, basic.SignalError(errors.New("form aborted"))
 	}
+
+	model, cmd := f.form.Update(msg)
+	f.form = model.(*huh.Form)
 
 	return f, cmd
 }

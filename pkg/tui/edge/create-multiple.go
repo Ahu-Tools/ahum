@@ -88,15 +88,14 @@ func (ef EdgesForms) goToForm() (EdgesForms, tea.Cmd) {
 }
 
 func (ef EdgesForms) Return(msg tea.Msg) (basic.RouterModel, tea.Cmd) {
-	if edge, ok := msg.(project.Edge); ok {
-		ef.edges[ef.edgesStep] = edge
+	switch msg := msg.(type) {
+	case project.Edge:
+		ef.edges[ef.edgesStep] = msg
 		ef.edgesStep++
 
 		return ef, func() tea.Msg { return NextFormMsg{} }
+	case error:
+		return ef, basic.SignalError(msg)
 	}
-	err := errors.New("edge form didn't completed")
-	if msg, ok := msg.(error); ok {
-		err = msg
-	}
-	return ef, basic.SignalError(err)
+	return ef, func() tea.Msg { return msg }
 }
