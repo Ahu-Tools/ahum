@@ -7,15 +7,11 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 
-	{{ range .Edges}}
-		{{ range .Pkgs}}
+	{{ range .ConfigGroups}}
+		{{ range .GetConfigurables}}
+			{{range .Pkgs}}
 	"{{.}}"
-		{{end}}
-	{{ end }}
-
-	{{ range .Infras}}
-		{{ range .Pkgs}}
-	"{{.}}"
+			{{end}}
 		{{end}}
 	{{ end }}
 )
@@ -29,7 +25,7 @@ func CheckConfigs() {
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("json")
-	viper.AddConfigPath(".")
+	viper.AddConfigPath("./config")
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
@@ -58,12 +54,18 @@ func CheckConfigs() {
 }
 
 func ConfigInfras() error {
-	{{ range .Edges}}
-	{{.Load}}
-	{{ end }}
+	{{ range .ConfigGroups}}
+	
+	// {{.Name}} group
+		{{ range .GetConfigurables}}
 
-	{{ range .Infras}}
+	// {{.Name}} load
 	{{.Load}}
+	// end of {{.Name}} load
+
+		{{end}}
+	// end {{.Name}} group
+
 	{{ end }}
 
 	return nil

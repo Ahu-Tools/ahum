@@ -6,29 +6,10 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"github.com/Ahu-Tools/AhuM/pkg/config"
+	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
 	"github.com/Ahu-Tools/AhuM/pkg/util"
 )
-
-const DefaultDirPerms = 0775
-const DefaultFilePerms = 0664
-
-type GenerationGuide struct {
-	RootPath  string
-	DirPerms  os.FileMode
-	FilePerms os.FileMode
-}
-
-func NewGenerationGuide(rootPath string, DirPerms, FilePerms os.FileMode) *GenerationGuide {
-	return &GenerationGuide{
-		RootPath:  rootPath,
-		DirPerms:  DirPerms,
-		FilePerms: FilePerms,
-	}
-}
-
-func DefaultGenerationGuide(rootPath string) *GenerationGuide {
-	return NewGenerationGuide(rootPath, DefaultDirPerms, DefaultFilePerms)
-}
 
 func (p Project) Generate(statusChan chan string) error {
 	defer close(statusChan)
@@ -50,14 +31,7 @@ func (p Project) Generate(statusChan chan string) error {
 		return err
 	}
 
-	statusChan <- "Generating config.json..."
-	err = p.GenerateJSONConfig()
-	if err != nil {
-		return err
-	}
-
-	statusChan <- "Generating config.go..."
-	err = p.GenerateConfig()
+	err = p.GenerateConfig(statusChan)
 	if err != nil {
 		return err
 	}
@@ -88,13 +62,33 @@ func (p Project) Generate(statusChan chan string) error {
 	return nil
 }
 
+func (p Project) GenerateConfig(statusChan chan string) error {
+	edgesCfg := NewEdgeConfig(p.Edges)
+	infrasCfg := NewInfraConfig(p.Infras)
+	cfgGroups := []config.ConfigurableGroup{
+		edgesCfg,
+		infrasCfg,
+	}
+	cfg := config.NewConfig(p.Info.PackageName, cfgGroups)
+	cfgGenGuide := gen.NewGuide(p.GenGuide.RootPath+"/config", p.GenGuide.DirPerms, p.GenGuide.FilePerms)
+
+	statusChan <- "Generating config.json..."
+	err := cfg.GenerateJSON(statusChan, *cfgGenGuide)
+	if err != nil {
+		return err
+	}
+
+	statusChan <- "Generating config.go..."
+	return cfg.Generate(statusChan, *cfgGenGuide)
+}
+
 func (p Project) GenerateEdge() error {
 	edgePath := filepath.Join(p.GenGuide.RootPath, "/edge/edge.go")
 	return util.ParseTemplateFile("template/edge/edge.go.tpl", p.Info, edgePath)
 }
 
 func (p Project) GoInit() error {
-	return os.WriteFile(p.GenGuide.RootPath+"/go.mod", []byte("module "+p.Info.PackageName+"\n\ngo "+p.Info.GoVersion+"\n"), DefaultFilePerms)
+	return os.WriteFile(p.GenGuide.RootPath+"/go.mod", []byte("module "+p.Info.PackageName+"\n\ngo "+p.Info.GoVersion+"\n"), p.GenGuide.FilePerms)
 }
 
 func (p Project) GoSweep(statusChan chan string) error {
@@ -149,7 +143,7 @@ func (p Project) GoFmt() error {
 	return nil
 }
 
-func createBasicDirs(genGuide GenerationGuide, infras []Infra) error {
+func createBasicDirs(genGuide gen.Guide, infras []Infra) error {
 	err := os.Mkdir(genGuide.RootPath+"/bin", genGuide.DirPerms)
 	if err != nil {
 		return err

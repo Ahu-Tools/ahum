@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 	"github.com/Ahu-Tools/AhuM/pkg/util"
 	"github.com/iancoleman/strcase"
@@ -55,15 +56,15 @@ func (g *Connect) Pkgs() ([]string, error) {
 	return []string{}, nil
 }
 
-func (g *Connect) JsonConfig() (any, error) {
-	return g.ConnectConfig, nil
+func (g *Connect) JsonConfig() any {
+	return g.ConnectConfig
 }
 
 func (g *Connect) Load() (string, error) {
 	return "", nil
 }
 
-func (g *Connect) Generate(status chan string, genGuide project.GenerationGuide) error {
+func (g *Connect) Generate(status chan string, genGuide gen.Guide) error {
 	err := util.ParseTemplateFile("template/connect/connect.go.tpl", g.pj, genGuide.RootPath+"/connect.go")
 	if err != nil {
 		return err
@@ -96,7 +97,7 @@ func (g *Connect) Generate(status chan string, genGuide project.GenerationGuide)
 	return nil
 }
 
-func (g *Connect) AddMethod(methodName, serviceName, versionName string, genGuide project.GenerationGuide) error {
+func (g *Connect) AddMethod(methodName, serviceName, versionName string, genGuide gen.Guide) error {
 	svcName := util.ToPkgName(serviceName)
 	vName := util.ToPkgName(versionName)
 	methName := strcase.ToCamel(methodName)
@@ -126,7 +127,7 @@ func (g *Connect) AddMethod(methodName, serviceName, versionName string, genGuid
 	return g.implementMethod(serviceName, versionName, methName, genGuide)
 }
 
-func (g *Connect) implementMethod(serviceName, versionName, methodName string, genGuide project.GenerationGuide) error {
+func (g *Connect) implementMethod(serviceName, versionName, methodName string, genGuide gen.Guide) error {
 	payload := map[string]any{
 		"ServiceName": serviceName,
 		"VersionName": versionName,
@@ -143,7 +144,7 @@ func (g *Connect) implementMethod(serviceName, versionName, methodName string, g
 	return util.ModifyCodeByMarkersFile(edgePath, insertions, genGuide.FilePerms)
 }
 
-func (g *Connect) AddVersion(versionName, serviceName string, genGuide project.GenerationGuide) error {
+func (g *Connect) AddVersion(versionName, serviceName string, genGuide gen.Guide) error {
 	svcName := util.ToPkgName(serviceName)
 	vName := util.ToPkgName(versionName)
 	vPath := filepath.Join(genGuide.RootPath, svcName, vName)
@@ -187,7 +188,7 @@ func (g *Connect) AddVersion(versionName, serviceName string, genGuide project.G
 	return g.registerVersion(serviceName, versionName, genGuide)
 }
 
-func (g *Connect) BufGenerate(genGuide project.GenerationGuide) error {
+func (g *Connect) BufGenerate(genGuide gen.Guide) error {
 	cmd := exec.Command("buf", "generate")
 	cmd.Dir = genGuide.RootPath
 	output, err := cmd.CombinedOutput()
@@ -197,7 +198,7 @@ func (g *Connect) BufGenerate(genGuide project.GenerationGuide) error {
 	return nil
 }
 
-func (g *Connect) registerVersion(serviceName, versionName string, genGuide project.GenerationGuide) error {
+func (g *Connect) registerVersion(serviceName, versionName string, genGuide gen.Guide) error {
 	svcName := util.ToPkgName(serviceName)
 	vName := util.ToPkgName(versionName)
 	regPath := filepath.Join(genGuide.RootPath, svcName, "registrar.go")
@@ -209,7 +210,7 @@ func (g *Connect) registerVersion(serviceName, versionName string, genGuide proj
 	return util.ModifyCodeByMarkersFile(regPath, insertions, genGuide.FilePerms)
 }
 
-func (g *Connect) AddService(serviceName string, genGuide project.GenerationGuide) error {
+func (g *Connect) AddService(serviceName string, genGuide gen.Guide) error {
 	svcName := util.ToPkgName(serviceName)
 	svcPath := filepath.Join(genGuide.RootPath, svcName)
 
@@ -232,7 +233,7 @@ func (g *Connect) AddService(serviceName string, genGuide project.GenerationGuid
 	return g.registerService(serviceName, genGuide)
 }
 
-func (g *Connect) registerService(serviceName string, genGuide project.GenerationGuide) error {
+func (g *Connect) registerService(serviceName string, genGuide gen.Guide) error {
 	svcName := util.ToPkgName(serviceName)
 	regPath := filepath.Join(genGuide.RootPath, "connect.go")
 	insertions := map[string]string{

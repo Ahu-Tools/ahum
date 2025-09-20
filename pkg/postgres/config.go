@@ -60,6 +60,6 @@ func (pc Postgres) Name() string {
 	return "postgres"
 }
 
-func (pc Postgres) JsonConfig() (any, error) {
-	return pc.jsonConfig, nil
+func (pc Postgres) JsonConfig() any {
+	return pc.jsonConfig
 }

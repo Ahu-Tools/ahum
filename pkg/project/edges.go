@@ -5,8 +5,33 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/Ahu-Tools/AhuM/pkg/config"
+	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
 	"github.com/Ahu-Tools/AhuM/pkg/util"
 )
+
+type Edge interface {
+	config.Configurable
+	Generate(status chan string, genGuide gen.Guide) error
+}
+
+type EdgeConfig struct {
+	cfgs []config.Configurable
+}
+
+func NewEdgeConfig(cfgs []Edge) EdgeConfig {
+	return EdgeConfig{
+		cfgs: util.Map(cfgs, func(edge Edge) config.Configurable { return edge }),
+	}
+}
+
+func (EdgeConfig) Name() string {
+	return "edges"
+}
+
+func (e EdgeConfig) GetConfigurables() []config.Configurable {
+	return e.cfgs
+}
 
 func (p *Project) AddEdges(statusChan chan string) error {
 	for _, edge := range p.Edges {
@@ -32,13 +57,13 @@ func (p *Project) AddEdge(edge Edge, statusChan chan string) error {
 	return edge.Generate(statusChan, *edgeGuide)
 }
 
-func (p *Project) GetEdgeGenGuide(edge Edge) (*GenerationGuide, error) {
+func (p *Project) GetEdgeGenGuide(edge Edge) (*gen.Guide, error) {
 	edgePath := filepath.Join(p.GenGuide.RootPath, "/edge/", edge.Name())
 	err := os.Mkdir(edgePath, p.GenGuide.DirPerms)
-	if !os.IsExist(err) {
+	if err != nil && !os.IsExist(err) {
 		return nil, err
 	}
-	return NewGenerationGuide(edgePath, p.GenGuide.DirPerms, p.GenGuide.FilePerms), nil
+	return gen.NewGuide(edgePath, p.GenGuide.DirPerms, p.GenGuide.FilePerms), nil
 }
 
 func (p *Project) addEdgeToStart(edge Edge) error {

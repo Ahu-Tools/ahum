@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
 )
 
 type ProjectInfo struct {
@@ -18,7 +20,7 @@ type Project struct {
 	Info     ProjectInfo
 	Infras   []Infra
 	Edges    []Edge
-	GenGuide GenerationGuide
+	GenGuide gen.Guide
 }
 
 func NewProjectInfo(packageName, goVersion, rootPath string) *ProjectInfo {
@@ -33,7 +35,7 @@ func NewProject(info ProjectInfo, infras []Infra, edges []Edge) Project {
 	return Project{
 		Info:     info,
 		Infras:   infras,
-		GenGuide: *DefaultGenerationGuide(info.RootPath),
+		GenGuide: *gen.DefaultGuide(info.RootPath),
 		Edges:    edges,
 	}
 }

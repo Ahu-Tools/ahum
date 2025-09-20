@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 	"github.com/Ahu-Tools/AhuM/pkg/util"
 	"github.com/iancoleman/strcase"
@@ -54,15 +55,15 @@ func (g *Gin) Pkgs() ([]string, error) {
 	return []string{}, nil
 }
 
-func (g *Gin) JsonConfig() (any, error) {
-	return g.ginConfig, nil
+func (g *Gin) JsonConfig() any {
+	return g.ginConfig
 }
 
 func (g *Gin) Load() (string, error) {
 	return "", nil
 }
 
-func (g *Gin) Generate(status chan string, genGuide project.GenerationGuide) error {
+func (g *Gin) Generate(status chan string, genGuide gen.Guide) error {
 	err := util.ParseTemplateFile("template/gin/gin.go.tpl", g.pj, genGuide.RootPath+"/gin.go")
 	if err != nil {
 		return err
@@ -85,7 +86,7 @@ func (g *Gin) Generate(status chan string, genGuide project.GenerationGuide) err
 	return nil
 }
 
-func (g *Gin) AddHandler(versionName, entityName, handlerName string, genGuide project.GenerationGuide) error {
+func (g *Gin) AddHandler(versionName, entityName, handlerName string, genGuide gen.Guide) error {
 	handlerName = strcase.ToCamel(handlerName)
 	entityName = util.ToPkgName(entityName)
 	versionName = util.ToPkgName(versionName)
@@ -107,7 +108,7 @@ func (g *Gin) AddHandler(versionName, entityName, handlerName string, genGuide p
 	return g.registerHandler(versionName, entityName, handlerName, genGuide)
 }
 
-func (g *Gin) registerHandler(versionName, entityName, handlerName string, genGuide project.GenerationGuide) error {
+func (g *Gin) registerHandler(versionName, entityName, handlerName string, genGuide gen.Guide) error {
 	eRoutePath := filepath.Join(genGuide.RootPath, versionName, entityName, "/route.go")
 
 	insertions := map[string]string{
@@ -116,7 +117,7 @@ func (g *Gin) registerHandler(versionName, entityName, handlerName string, genGu
 	return util.ModifyCodeByMarkersFile(eRoutePath, insertions, genGuide.FilePerms)
 }
 
-func (g *Gin) AddEntity(versionName, entityName string, genGuide project.GenerationGuide) error {
+func (g *Gin) AddEntity(versionName, entityName string, genGuide gen.Guide) error {
 	entityName = util.ToPkgName(entityName)
 	versionName = util.ToPkgName(versionName)
 
@@ -144,7 +145,7 @@ func (g *Gin) AddEntity(versionName, entityName string, genGuide project.Generat
 	return g.registerEntity(versionName, entityName, genGuide)
 }
 
-func (g *Gin) registerEntity(versionName, entityName string, genGuide project.GenerationGuide) error {
+func (g *Gin) registerEntity(versionName, entityName string, genGuide gen.Guide) error {
 	vRegPath := filepath.Join(genGuide.RootPath, versionName, "/registrar.go")
 
 	insertions := map[string]string{
@@ -155,7 +156,7 @@ func (g *Gin) registerEntity(versionName, entityName string, genGuide project.Ge
 	return util.ModifyCodeByMarkersFile(vRegPath, insertions, genGuide.FilePerms)
 }
 
-func (g *Gin) AddVersion(versionName string, genGuide project.GenerationGuide) error {
+func (g *Gin) AddVersion(versionName string, genGuide gen.Guide) error {
 	versionName = util.ToPkgName(versionName)
 
 	vPath := filepath.Join(genGuide.RootPath, versionName)
@@ -178,7 +179,7 @@ func (g *Gin) AddVersion(versionName string, genGuide project.GenerationGuide) e
 	return g.registerVersion(versionName, genGuide)
 }
 
-func (g *Gin) registerVersion(versionName string, genGuide project.GenerationGuide) error {
+func (g *Gin) registerVersion(versionName string, genGuide gen.Guide) error {
 	ginPath := filepath.Join(genGuide.RootPath, "gin.go")
 
 	insertions := map[string]string{

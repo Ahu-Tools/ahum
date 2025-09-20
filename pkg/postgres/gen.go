@@ -5,10 +5,10 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/Ahu-Tools/AhuM/pkg/project"
+	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
 )
 
-func (p Postgres) Generate(statusChan chan string, genGuide project.GenerationGuide) error {
+func (p Postgres) Generate(statusChan chan string, genGuide gen.Guide) error {
 	statusChan <- "Generating postgresql directories structure..."
 	err := p.generateBasicDirs(genGuide)
 	if err != nil {
@@ -24,11 +24,11 @@ func (p Postgres) Generate(statusChan chan string, genGuide project.GenerationGu
 	return nil
 }
 
-func (p Postgres) generateBasicDirs(genGuide project.GenerationGuide) error {
+func (p Postgres) generateBasicDirs(genGuide gen.Guide) error {
 	return os.Mkdir(genGuide.RootPath+"/migrations", genGuide.DirPerms)
 }
 
-func (p Postgres) generateBasicFiles(genGuide project.GenerationGuide) error {
+func (p Postgres) generateBasicFiles(genGuide gen.Guide) error {
 	err := generateConfig(genGuide)
 	if err != nil {
 		return err
@@ -42,7 +42,7 @@ func (p Postgres) generateBasicFiles(genGuide project.GenerationGuide) error {
 	return nil
 }
 
-func generateConfig(genGuide project.GenerationGuide) error {
+func generateConfig(genGuide gen.Guide) error {
 	//Generate config.go using config.go.tpl template
 	tmplName := "config.go.tpl"
 	tmplNamePath := "template/infrastructures/postgres/" + tmplName
@@ -62,7 +62,7 @@ func generateConfig(genGuide project.GenerationGuide) error {
 	return tmpl.ExecuteTemplate(f, tmplName, nil)
 }
 
-func generateConnection(genGuide project.GenerationGuide) error {
+func generateConnection(genGuide gen.Guide) error {
 	//Generate connection.go using connection.go.tpl template
 	tmplName := "connection.go.tpl"
 	tmplNamePath := "template/infrastructures/postgres/" + tmplName
