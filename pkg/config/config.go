@@ -2,7 +2,6 @@ package config
 
 type Config struct {
 	PackageName  string
-	RootPath     string
 	ConfigGroups []ConfigurableGroup
 }
 

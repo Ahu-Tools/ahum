@@ -9,8 +9,7 @@ import (
 
 func (c Config) Generate(statusChan chan string, genGuide gen.Guide) error {
 	tmplPath := "template/config/config.go.tpl"
-	c.RootPath = filepath.Clean(genGuide.RootPath)
-	filePath := filepath.Join(c.RootPath, "/config.go")
+	filePath := filepath.Join(genGuide.RootPath, "config.go")
 
 	return util.ParseTemplateFile(tmplPath, c, filePath)
 }
