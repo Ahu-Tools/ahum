@@ -24,14 +24,21 @@ func (p *Project) AddEdge(edge Edge, statusChan chan string) error {
 		return err
 	}
 
-	edgePath := filepath.Join(p.GenGuide.RootPath, "/edge/", edge.Name())
-	err = os.Mkdir(edgePath, p.GenGuide.DirPerms)
+	edgeGuide, err := p.GetEdgeGenGuide(edge)
 	if err != nil {
 		return err
 	}
 
-	edgeGuide := NewGenerationGuide(edgePath, p.GenGuide.DirPerms, p.GenGuide.FilePerms)
-	return edge.Generate(statusChan, edgeGuide)
+	return edge.Generate(statusChan, *edgeGuide)
+}
+
+func (p *Project) GetEdgeGenGuide(edge Edge) (*GenerationGuide, error) {
+	edgePath := filepath.Join(p.GenGuide.RootPath, "/edge/", edge.Name())
+	err := os.Mkdir(edgePath, p.GenGuide.DirPerms)
+	if !os.IsExist(err) {
+		return nil, err
+	}
+	return NewGenerationGuide(edgePath, p.GenGuide.DirPerms, p.GenGuide.FilePerms), nil
 }
 
 func (p *Project) addEdgeToStart(edge Edge) error {

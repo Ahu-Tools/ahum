@@ -33,7 +33,7 @@ func NewProject(info ProjectInfo, infras []Infra, edges []Edge) Project {
 	return Project{
 		Info:     info,
 		Infras:   infras,
-		GenGuide: DefaultGenerationGuide(info.RootPath),
+		GenGuide: *DefaultGenerationGuide(info.RootPath),
 		Edges:    edges,
 	}
 }

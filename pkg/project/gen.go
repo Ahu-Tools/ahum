@@ -18,15 +18,15 @@ type GenerationGuide struct {
 	FilePerms os.FileMode
 }
 
-func NewGenerationGuide(rootPath string, DirPerms, FilePerms os.FileMode) GenerationGuide {
-	return GenerationGuide{
+func NewGenerationGuide(rootPath string, DirPerms, FilePerms os.FileMode) *GenerationGuide {
+	return &GenerationGuide{
 		RootPath:  rootPath,
 		DirPerms:  DirPerms,
 		FilePerms: FilePerms,
 	}
 }
 
-func DefaultGenerationGuide(rootPath string) GenerationGuide {
+func DefaultGenerationGuide(rootPath string) *GenerationGuide {
 	return NewGenerationGuide(rootPath, DefaultDirPerms, DefaultFilePerms)
 }
 
