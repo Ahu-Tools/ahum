@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/Ahu-Tools/AhuM/pkg/config"
 	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
 	"github.com/Ahu-Tools/AhuM/pkg/util"
 )
@@ -63,17 +62,14 @@ func (p Project) Generate(statusChan chan string) error {
 }
 
 func (p Project) GenerateConfig(statusChan chan string) error {
-	edgesCfg := NewEdgeConfig(p.Edges)
-	infrasCfg := NewInfraConfig(p.Infras)
-	cfgGroups := []config.ConfigurableGroup{
-		edgesCfg,
-		infrasCfg,
+	cfg := p.GetConfig()
+	cfgGenGuide, err := p.GetConfigGenGuide()
+	if err != nil {
+		return err
 	}
-	cfg := config.NewConfig(p.Info.PackageName, cfgGroups)
-	cfgGenGuide := gen.NewGuide(p.GenGuide.RootPath+"/config", p.GenGuide.DirPerms, p.GenGuide.FilePerms)
 
 	statusChan <- "Generating config.json..."
-	err := cfg.GenerateJSON(statusChan, *cfgGenGuide)
+	err = cfg.GenerateJSON(statusChan, *cfgGenGuide)
 	if err != nil {
 		return err
 	}
