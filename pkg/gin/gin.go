@@ -5,11 +5,14 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/Ahu-Tools/AhuM/pkg/config"
 	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 	"github.com/Ahu-Tools/AhuM/pkg/util"
 	"github.com/iancoleman/strcase"
 )
+
+const Name = "gin"
 
 type GinServer struct {
 	Host string `json:"host"`
@@ -45,22 +48,18 @@ func NewGin(pj *project.ProjectInfo, ginConfig GinConfig) *Gin {
 	}
 }
 
-//We want to implement project.Edge for Gin
+func LoadGinFromProject(pj project.Project) (*Gin, error) {
+	genGuide, err := pj.GetConfigGenGuide()
+	if err != nil {
+		return nil, err
+	}
 
-func (g *Gin) Name() string {
-	return "gin"
-}
+	ginConfig, err := config.LoadConfig[GinConfig](*genGuide, Name)
+	if err != nil {
+		return nil, err
+	}
 
-func (g *Gin) Pkgs() ([]string, error) {
-	return []string{}, nil
-}
-
-func (g *Gin) JsonConfig() any {
-	return g.ginConfig
-}
-
-func (g *Gin) Load() (string, error) {
-	return "", nil
+	return NewGin(&pj.Info, *ginConfig), nil
 }
 
 func (g *Gin) Generate(status chan string, genGuide gen.Guide) error {
