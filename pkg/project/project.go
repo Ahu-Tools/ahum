@@ -41,9 +41,13 @@ func NewProject(info ProjectInfo, infras []Infra, edges []Edge) Project {
 }
 
 func LoadProjectInfo(path string) (ProjectInfo, error) {
-	rootPath, err := filepath.Abs(path)
-	if err != nil {
-		return ProjectInfo{}, err
+	rootPath := filepath.Clean(path)
+	if filepath.IsAbs(path) {
+		var err error
+		rootPath, err = filepath.Localize(path)
+		if err != nil {
+			return ProjectInfo{}, err
+		}
 	}
 
 	goModPath := filepath.Join(rootPath, "go.mod")
@@ -86,5 +90,6 @@ func LoadProject(path string) (*Project, error) {
 	// For now, we don't need to load infrastructure and edge configurations
 	// to add a new service. So we can initialize it as empty.
 	project := NewProject(info, []Infra{}, []Edge{})
+	project.GenGuide = *gen.DefaultGuide(info.RootPath)
 	return &project, nil
 }
