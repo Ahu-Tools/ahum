@@ -8,6 +8,10 @@ import (
 	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
 )
 
+type EdgeLoader func(pj Project, cfgGroup string) (Edge, error)
+
+var edgeLoaders = make(map[string]EdgeLoader)
+
 func (p *Project) GetConfig() *config.Config {
 	edgesCfg := NewEdgeConfig(p.Edges)
 	infrasCfg := NewInfraConfig(p.Infras)
@@ -17,6 +21,7 @@ func (p *Project) GetConfig() *config.Config {
 	}
 	return config.NewConfig(p.Info.PackageName, cfgGroups)
 }
+
 func (p Project) GetConfigGenGuide() (*gen.Guide, error) {
 	path := filepath.Join(p.GenGuide.RootPath, "config")
 	err := os.Mkdir(path, p.GenGuide.DirPerms)
@@ -24,4 +29,8 @@ func (p Project) GetConfigGenGuide() (*gen.Guide, error) {
 		return nil, err
 	}
 	return gen.NewGuide(path, p.GenGuide.DirPerms, p.GenGuide.FilePerms), nil
+}
+
+func RegisterEdgeLoader(name string, el EdgeLoader) {
+	edgeLoaders[name] = el
 }
