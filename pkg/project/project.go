@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
+	"github.com/Ahu-Tools/AhuM/pkg/util"
 )
 
 type ProjectInfo struct {
@@ -91,5 +92,27 @@ func LoadProject(path string) (*Project, error) {
 	// to add a new service. So we can initialize it as empty.
 	project := NewProject(info, []Infra{}, []Edge{})
 	project.GenGuide = *gen.DefaultGuide(info.RootPath)
+	err = project.LoadEdges()
+	if err != nil {
+		return nil, err
+	}
+
 	return &project, nil
+}
+
+func (p *Project) LoadEdges() error {
+	p.Edges = make([]Edge, 0)
+	for _, loader := range edgeLoaders {
+		edge, err := loader(*p, EdgesGroup)
+		if err, ok := err.(util.JsonError); ok {
+			if err.Code == util.NOT_FOUND_JERR {
+				continue
+			}
+		}
+		if err != nil {
+			return err
+		}
+		p.Edges = append(p.Edges, edge)
+	}
+	return nil
 }
