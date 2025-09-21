@@ -27,6 +27,12 @@ func LoadConfig[T any](genGuide gen.Guide, name string) (*T, error) {
 	return config, err
 }
 
+func LoadConfigByGroup[T any](group string, cfgble Configurable, genGuide gen.Guide) (*T, error) {
+	configPath := filepath.Join(genGuide.RootPath, "config.json")
+	config, err := util.LoadJSONPathToStruct[T](configPath, fmt.Sprintf("%s.%s", group, cfgble.Name()))
+	return config, err
+}
+
 func AddConfigByGroup(group string, cfg Configurable, genGuide gen.Guide) error {
 	configPath := filepath.Join(genGuide.RootPath, "config.json")
 	err := util.AddElementToJSON(configPath, group, cfg.Name(), cfg.JsonConfig())
