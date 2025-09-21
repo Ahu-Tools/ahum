@@ -6,6 +6,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/Ahu-Tools/AhuM/pkg/config"
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 )
 
@@ -64,4 +65,22 @@ func (pc Postgres) Name() string {
 
 func (pc Postgres) JsonConfig() any {
 	return pc.jsonConfig
+}
+
+func init() {
+	project.RegisterInfraLoader(Name, Loader)
+}
+
+func Loader(pj project.Project, cfgGroup string) (project.Infra, error) {
+	genGuide, err := pj.GetConfigGenGuide()
+	if err != nil {
+		return nil, err
+	}
+
+	cfg, err := config.LoadConfigByGroup[PostgresConfig](cfgGroup, &Postgres{}, *genGuide)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewPostgres(pj.Info, *cfg), nil
 }
