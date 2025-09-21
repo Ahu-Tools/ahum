@@ -116,3 +116,11 @@ func (p *Project) LoadEdges() error {
 	}
 	return nil
 }
+
+func (p *Project) GetEdgesByName() map[string]Edge {
+	edgesByName := make(map[string]Edge)
+	for _, edge := range p.Edges {
+		edgesByName[edge.Name()] = edge
+	}
+	return edgesByName
+}
