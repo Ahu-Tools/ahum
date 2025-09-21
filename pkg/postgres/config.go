@@ -9,12 +9,14 @@ import (
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 )
 
+const Name = "postgres"
+
 type Postgres struct {
 	projectInfo project.ProjectInfo
-	jsonConfig  PostgresJSONConfig
+	jsonConfig  PostgresConfig
 }
 
-func NewPostgres(projectInfo project.ProjectInfo, postgresJSONConfig PostgresJSONConfig) *Postgres {
+func NewPostgres(projectInfo project.ProjectInfo, postgresJSONConfig PostgresConfig) *Postgres {
 	return &Postgres{
 		projectInfo: projectInfo,
 		jsonConfig:  postgresJSONConfig,
@@ -57,7 +59,7 @@ func (c Postgres) Load() (string, error) {
 }
 
 func (pc Postgres) Name() string {
-	return "postgres"
+	return Name
 }
 
 func (pc Postgres) JsonConfig() any {

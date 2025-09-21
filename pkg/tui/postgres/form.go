@@ -15,13 +15,13 @@ type DoneFormMsg struct{}
 type AbortedFormMsg struct{}
 
 type PostrgesForm struct {
-	jsonConfig *postgres.PostgresJSONConfig
+	jsonConfig *postgres.PostgresConfig
 	pjInfo     project.ProjectInfo
 	form       *huh.Form
 }
 
 func NewPostgresForm(p project.ProjectInfo) *PostrgesForm {
-	jsonConfig := postgres.DefaultPostgresJSONConfig()
+	jsonConfig := postgres.DefaultPostgresConfig()
 	form := huh.NewForm(huh.NewGroup(
 		huh.NewInput().
 			Title("Enter your postgres username:").
