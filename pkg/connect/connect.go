@@ -46,24 +46,6 @@ func NewConnect(pj *project.ProjectInfo, ConnectConfig ConnectConfig) *Connect {
 	}
 }
 
-//We want to implement project.Edge for Connect
-
-func (g *Connect) Name() string {
-	return "connect"
-}
-
-func (g *Connect) Pkgs() ([]string, error) {
-	return []string{}, nil
-}
-
-func (g *Connect) JsonConfig() any {
-	return g.ConnectConfig
-}
-
-func (g *Connect) Load() (string, error) {
-	return "", nil
-}
-
 func (g *Connect) Generate(status chan string, genGuide gen.Guide) error {
 	err := util.ParseTemplateFile("template/connect/connect.go.tpl", g.pj, genGuide.RootPath+"/connect.go")
 	if err != nil {
