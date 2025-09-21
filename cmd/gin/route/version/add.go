@@ -7,9 +7,8 @@ import (
 	"github.com/Ahu-Tools/AhuM/pkg/gin"
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
-
-var pjPath string
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
@@ -20,7 +19,7 @@ This will create a new version directory and a registrar file.
 You must provide the version name as an argument.`,
 	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		pj, err := project.LoadProject(pjPath)
+		pj, err := project.LoadProject(viper.GetString("projectPath"))
 		if err != nil {
 			return err
 		}
@@ -49,5 +48,4 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// addCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	addCmd.PersistentFlags().StringVarP(&pjPath, "path", "p", ".", "project root path")
 }
