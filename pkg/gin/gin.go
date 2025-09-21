@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Ahu-Tools/AhuM/pkg/config"
 	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 	"github.com/Ahu-Tools/AhuM/pkg/util"
@@ -48,18 +47,9 @@ func NewGin(pj *project.ProjectInfo, ginConfig GinConfig) *Gin {
 	}
 }
 
-func LoadGinFromProject(pj project.Project) (*Gin, error) {
-	genGuide, err := pj.GetConfigGenGuide()
-	if err != nil {
-		return nil, err
-	}
-
-	ginConfig, err := config.LoadConfig[GinConfig](*genGuide, Name)
-	if err != nil {
-		return nil, err
-	}
-
-	return NewGin(&pj.Info, *ginConfig), nil
+func LoadGinFromProject(pj project.Project) *Gin {
+	edges := pj.GetEdgesByName()
+	return edges[Name].(*Gin)
 }
 
 func (g *Gin) Generate(status chan string, genGuide gen.Guide) error {

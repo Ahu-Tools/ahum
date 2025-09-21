@@ -24,10 +24,7 @@ You must provide the version name as an argument.`,
 			return err
 		}
 
-		g, err := gin.LoadGinFromProject(*pj)
-		if err != nil {
-			return err
-		}
+		g := gin.LoadGinFromProject(*pj)
 
 		genGuide, err := pj.GetEdgeGenGuide(g)
 		if err != nil {
