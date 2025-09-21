@@ -9,8 +9,10 @@ import (
 )
 
 type EdgeLoader func(pj Project, cfgGroup string) (Edge, error)
+type InfraLoader func(pj Project, cfgGroup string) (Infra, error)
 
 var edgeLoaders = make(map[string]EdgeLoader)
+var infraLoaders = make(map[string]InfraLoader)
 
 func (p *Project) GetConfig() *config.Config {
 	edgesCfg := NewEdgeConfig(p.Edges)
@@ -33,4 +35,8 @@ func (p Project) GetConfigGenGuide() (*gen.Guide, error) {
 
 func RegisterEdgeLoader(name string, el EdgeLoader) {
 	edgeLoaders[name] = el
+}
+
+func RegisterInfraLoader(name string, il InfraLoader) {
+	infraLoaders[name] = il
 }
