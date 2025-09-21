@@ -10,6 +10,8 @@ import (
 	"github.com/Ahu-Tools/AhuM/pkg/util"
 )
 
+const EdgesGroup = "edges"
+
 type Edge interface {
 	config.Configurable
 	Generate(status chan string, genGuide gen.Guide) error
@@ -26,16 +28,16 @@ func NewEdgeConfig(cfgs []Edge) EdgeConfig {
 }
 
 func (EdgeConfig) Name() string {
-	return "edges"
+	return EdgesGroup
 }
 
 func (e EdgeConfig) GetConfigurables() []config.Configurable {
 	return e.cfgs
 }
 
-func (p *Project) AddEdges(statusChan chan string) error {
+func (p *Project) GenEdges(statusChan chan string) error {
 	for _, edge := range p.Edges {
-		err := p.AddEdge(edge, statusChan)
+		err := p.GenEdge(edge, statusChan)
 		if err != nil {
 			return err
 		}
@@ -43,7 +45,7 @@ func (p *Project) AddEdges(statusChan chan string) error {
 	return nil
 }
 
-func (p *Project) AddEdge(edge Edge, statusChan chan string) error {
+func (p *Project) GenEdge(edge Edge, statusChan chan string) error {
 	err := p.addEdgeToStart(edge)
 	if err != nil {
 		return err
@@ -66,12 +68,36 @@ func (p *Project) GetEdgeGenGuide(edge Edge) (*gen.Guide, error) {
 	return gen.NewGuide(edgePath, p.GenGuide.DirPerms, p.GenGuide.FilePerms), nil
 }
 
+func (p *Project) AddEdge(edge Edge, statusChan chan string) error {
+	cfgGen, err := p.GetConfigGenGuide()
+	if err != nil {
+		return nil
+	}
+
+	err = config.AddConfigByGroup(EdgesGroup, edge, *cfgGen)
+	if err != nil {
+		return err
+	}
+
+	err = p.GenEdge(edge, statusChan)
+	if err != nil {
+		return err
+	}
+
+	err = p.GoSweep(statusChan)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (p *Project) addEdgeToStart(edge Edge) error {
 	path := filepath.Join(p.GenGuide.RootPath, "/edge/edge.go")
 
 	insertions := map[string]string{
-		"imports": fmt.Sprintf(`"%s/edge/%s"`, p.Info.PackageName, edge.Name()),
-		"edges":   edge.Name() + ".New(),",
+		"imports":  fmt.Sprintf(`"%s/edge/%s"`, p.Info.PackageName, edge.Name()),
+		EdgesGroup: edge.Name() + ".New(),",
 	}
 
 	return util.ModifyCodeByMarkersFile(path, insertions, p.GenGuide.FilePerms)
