@@ -14,6 +14,7 @@ import (
 			{{end}}
 		{{end}}
 	{{ end }}
+	//@ahum: imports
 )
 
 // NewConfig loads configuration from environment variables or .env file.
@@ -56,17 +57,19 @@ func CheckConfigs() {
 func ConfigInfras() error {
 	{{ range .ConfigGroups}}
 	
-	// {{.Name}} group
+	// @ahum:{{.Name}}.group
 		{{ range .GetConfigurables}}
 
-	// {{.Name}} load
+	// @ahum:{{.Name}}.load
 	{{.Load}}
-	// end of {{.Name}} load
+	// @ahum:end.{{.Name}}.load
 
 		{{end}}
-	// end {{.Name}} group
+	// @ahum:end.{{.Name}}.group
 
 	{{ end }}
+
+	//@ahum: loads
 
 	return nil
 }
