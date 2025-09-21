@@ -9,24 +9,6 @@ import (
 	"github.com/Ahu-Tools/AhuM/pkg/util"
 )
 
-func LoadConfig[T any](genGuide gen.Guide, name string) (*T, error) {
-	configPath := filepath.Join(genGuide.RootPath, "config.json")
-	regP, err := util.LoadJSONPathToStruct[RegisterMap](configPath, "registrar")
-	if err != nil {
-		return nil, err
-	}
-
-	reg := *regP
-
-	jsonPath, ok := reg[name]
-	if !ok {
-		return nil, fmt.Errorf("there's no configuration registered with name: %s", name)
-	}
-
-	config, err := util.LoadJSONPathToStruct[T](configPath, jsonPath)
-	return config, err
-}
-
 func LoadConfigByGroup[T any](group string, cfgble Configurable, genGuide gen.Guide) (*T, error) {
 	configPath := filepath.Join(genGuide.RootPath, "config.json")
 	config, err := util.LoadJSONPathToStruct[T](configPath, fmt.Sprintf("%s.%s", group, cfgble.Name()))
