@@ -146,3 +146,11 @@ func (p *Project) GetEdgesByName() map[string]Edge {
 	}
 	return edgesByName
 }
+
+func (p *Project) GetInfrasByName() map[string]Infra {
+	infrasByName := make(map[string]Infra)
+	for _, infra := range p.Infras {
+		infrasByName[infra.Name()] = infra
+	}
+	return infrasByName
+}
