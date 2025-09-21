@@ -11,6 +11,7 @@ import (
 )
 
 const EdgesGroup = "edges"
+const InfrasGroup = "infras"
 
 type Edge interface {
 	config.Configurable

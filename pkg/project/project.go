@@ -97,6 +97,11 @@ func LoadProject(path string) (*Project, error) {
 		return nil, err
 	}
 
+	err = project.LoadInfras()
+	if err != nil {
+		return nil, err
+	}
+
 	return &project, nil
 }
 
@@ -113,6 +118,23 @@ func (p *Project) LoadEdges() error {
 			return err
 		}
 		p.Edges = append(p.Edges, edge)
+	}
+	return nil
+}
+
+func (p *Project) LoadInfras() error {
+	p.Infras = make([]Infra, 0)
+	for _, loader := range infraLoaders {
+		infra, err := loader(*p, InfrasGroup)
+		if err, ok := err.(util.JsonError); ok {
+			if err.Code == util.NOT_FOUND_JERR {
+				continue
+			}
+		}
+		if err != nil {
+			return err
+		}
+		p.Infras = append(p.Infras, infra)
 	}
 	return nil
 }
