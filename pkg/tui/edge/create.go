@@ -87,12 +87,12 @@ func (c CreateForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (c CreateForm) View() string {
-	if c.form.State == huh.StateCompleted {
-		c.form.View()
+	if !c.quitting {
+		return c.form.View()
+	} else {
+		style := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color(util.SuccessColor))
+		return style.Render("Edge added successfully!") + "\n"
 	}
-
-	style := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color(util.SuccessColor))
-	return style.Render("Edge added successfully!") + "\n"
 }
 
 func (c CreateForm) Return(msg tea.Msg) (basic.RouterModel, tea.Cmd) {
