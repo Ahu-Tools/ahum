@@ -172,7 +172,6 @@ func ModifyFileByMarkers(src []byte, insertions map[string]string) ([]byte, erro
 			output.WriteString(newCode)
 			output.WriteString("\n")
 			output.WriteString(indentation)
-			output.WriteString(trimmedLine)
 
 			// Mark this marker as found
 			foundMarkers[cleanLine] = true
