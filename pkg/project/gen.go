@@ -48,7 +48,7 @@ func (p Project) Generate(statusChan chan string) error {
 	}
 
 	statusChan <- "Generating infrastructures..."
-	err = p.GenerateInfras(statusChan)
+	err = p.GenInfras(statusChan)
 	if err != nil {
 		return err
 	}

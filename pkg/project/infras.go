@@ -32,19 +32,23 @@ func (e InfraConfig) GetConfigurables() []config.Configurable {
 	return e.cfgs
 }
 
-func (p *Project) GenerateInfras(statusChan chan string) error {
+func (p *Project) GenInfras(statusChan chan string) error {
 	for _, infra := range p.Infras {
-		infraGuide, err := p.GetInfraGenGuide(infra)
-		if err != nil {
-			return err
-		}
-
-		err = infra.Generate(statusChan, *infraGuide)
+		err := p.GenInfra(infra, statusChan)
 		if err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func (p *Project) GenInfra(infra Infra, statusChan chan string) error {
+	infraGuide, err := p.GetInfraGenGuide(infra)
+	if err != nil {
+		return err
+	}
+
+	return infra.Generate(statusChan, *infraGuide)
 }
 
 func (p *Project) GetInfraGenGuide(infra Infra) (*gen.Guide, error) {
