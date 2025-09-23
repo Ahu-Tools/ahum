@@ -16,6 +16,7 @@ func Start(ctx context.Context, wg *sync.WaitGroup) {
 		// @ahum: edges
 	}
 
+	wg.Add(len(edges))
 	for _, edge := range edges {
 		edge.Configure()
 		go edge.Start(ctx, wg)
