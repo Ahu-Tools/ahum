@@ -1,33 +1,42 @@
 package project
 
 import (
+	"os"
 	"path/filepath"
 
-	"github.com/Ahu-Tools/AhuM/pkg/util"
+	"github.com/Ahu-Tools/AhuM/pkg/config"
+	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
 )
 
-type Config struct {
-	PackageName string
-	Pkgs        []string
-	Infras      []Infra
-}
+type EdgeLoader func(pj Project, cfgGroup string) (Edge, error)
+type InfraLoader func(pj Project, cfgGroup string) (Infra, error)
 
-type Infra interface {
-	Generate(chan string, GenerationGuide) error
-	Pkgs() ([]string, error)
-	Load() (string, error)
-	Name() string
-	JsonConfig() (any, error)
-}
+var edgeLoaders = make(map[string]EdgeLoader)
+var infraLoaders = make(map[string]InfraLoader)
 
-func (p *Project) GenerateConfig() error {
-	config := Config{
-		PackageName: p.Info.PackageName,
-		Infras:      p.Infras,
+func (p *Project) GetConfig() *config.Config {
+	edgesCfg := NewEdgeConfig(p.Edges)
+	infrasCfg := NewInfraConfig(p.Infras)
+	cfgGroups := []config.ConfigurableGroup{
+		edgesCfg,
+		infrasCfg,
 	}
+	return config.NewConfig(p.Info.PackageName, cfgGroups)
+}
 
-	tmplPath := "template/config/config.go.tpl"
-	filePath := filepath.Join(p.Info.RootPath + "/config/config.go")
+func (p Project) GetConfigGenGuide() (*gen.Guide, error) {
+	path := filepath.Join(p.GenGuide.RootPath, "config")
+	err := os.Mkdir(path, p.GenGuide.DirPerms)
+	if err != nil && !os.IsExist(err) {
+		return nil, err
+	}
+	return gen.NewGuide(path, p.GenGuide.DirPerms, p.GenGuide.FilePerms), nil
+}
 
-	return util.ParseTemplateFile(tmplPath, config, filePath)
+func RegisterEdgeLoader(name string, el EdgeLoader) {
+	edgeLoaders[name] = el
+}
+
+func RegisterInfraLoader(name string, il InfraLoader) {
+	infraLoaders[name] = il
 }

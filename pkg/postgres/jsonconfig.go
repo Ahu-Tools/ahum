@@ -1,6 +1,6 @@
 package postgres
 
-type PostgresJSONConfig struct {
+type PostgresConfig struct {
 	User     string `json:"user"`
 	Password string `json:"password"`
 	DbName   string `json:"db_name"`
@@ -9,8 +9,8 @@ type PostgresJSONConfig struct {
 	SSLMode  string `json:"sslmode"`
 }
 
-func NewPostgresJSONConfig(user, password, dbName, host, port, sslMode string) *PostgresJSONConfig {
-	return &PostgresJSONConfig{
+func NewPostgresConfig(user, password, dbName, host, port, sslMode string) *PostgresConfig {
+	return &PostgresConfig{
 		User:     user,
 		Password: password,
 		DbName:   dbName,
@@ -20,8 +20,8 @@ func NewPostgresJSONConfig(user, password, dbName, host, port, sslMode string) *
 	}
 }
 
-func DefaultPostgresJSONConfig() *PostgresJSONConfig {
-	return &PostgresJSONConfig{
+func DefaultPostgresConfig() *PostgresConfig {
+	return &PostgresConfig{
 		User:     "postgres",
 		Password: "postgres",
 		DbName:   "my_app",

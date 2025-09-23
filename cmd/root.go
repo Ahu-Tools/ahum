@@ -7,6 +7,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Ahu-Tools/AhuM/cmd/connect"
+	"github.com/Ahu-Tools/AhuM/cmd/edge"
+	"github.com/Ahu-Tools/AhuM/cmd/gin"
+	"github.com/Ahu-Tools/AhuM/cmd/infra"
 	"github.com/Ahu-Tools/AhuM/cmd/initialise"
 	"github.com/Ahu-Tools/AhuM/cmd/service"
 	"github.com/spf13/cobra"
@@ -34,13 +38,19 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.AddCommand(initialise.InitCmd)
+	rootCmd.AddCommand(infra.Cmd)
+	rootCmd.AddCommand(edge.EdgeCmd)
 	rootCmd.AddCommand(service.ServiceCmd)
+	rootCmd.AddCommand(gin.GinCmd)
+	rootCmd.AddCommand(connect.Cmd)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.ahum.yaml)")
+	rootCmd.PersistentFlags().StringP("path", "p", ".", "project root path")
+	viper.BindPFlag("projectPath", rootCmd.PersistentFlags().Lookup("path"))
 }
 
 // initConfig reads in config file and ENV variables if set.

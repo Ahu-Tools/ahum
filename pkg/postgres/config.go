@@ -6,15 +6,18 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/Ahu-Tools/AhuM/pkg/config"
 	"github.com/Ahu-Tools/AhuM/pkg/project"
 )
 
+const Name = "postgres"
+
 type Postgres struct {
 	projectInfo project.ProjectInfo
-	jsonConfig  PostgresJSONConfig
+	jsonConfig  PostgresConfig
 }
 
-func NewPostgres(projectInfo project.ProjectInfo, postgresJSONConfig PostgresJSONConfig) *Postgres {
+func NewPostgres(projectInfo project.ProjectInfo, postgresJSONConfig PostgresConfig) *Postgres {
 	return &Postgres{
 		projectInfo: projectInfo,
 		jsonConfig:  postgresJSONConfig,
@@ -57,9 +60,27 @@ func (c Postgres) Load() (string, error) {
 }
 
 func (pc Postgres) Name() string {
-	return "postgres"
+	return Name
 }
 
-func (pc Postgres) JsonConfig() (any, error) {
-	return pc.jsonConfig, nil
+func (pc Postgres) JsonConfig() any {
+	return pc.jsonConfig
+}
+
+func init() {
+	project.RegisterInfraLoader(Name, Loader)
+}
+
+func Loader(pj project.Project, cfgGroup string) (project.Infra, error) {
+	genGuide, err := pj.GetConfigGenGuide()
+	if err != nil {
+		return nil, err
+	}
+
+	cfg, err := config.LoadConfigByGroup[PostgresConfig](cfgGroup, &Postgres{}, *genGuide)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewPostgres(pj.Info, *cfg), nil
 }

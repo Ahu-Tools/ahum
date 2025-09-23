@@ -1,6 +1,7 @@
 package project
 
 import (
+	"errors"
 	"runtime"
 	"strings"
 
@@ -27,7 +28,7 @@ func NewInfoForm() InfoForm {
 
 		huh.NewInput().
 			Title("Enter the package name of your new project:").
-			Validate(validateName).
+			Validate(huh.ValidateNotEmpty()).
 			Value(&info.PackageName).
 			Key("packageName"),
 
@@ -56,41 +57,28 @@ func (m InfoForm) Init() tea.Cmd {
 }
 
 func (m InfoForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	form, cmd := m.form.Update(msg)
-	if f, ok := form.(*huh.Form); ok {
-		m.form = f
+	switch m.form.State {
+	case huh.StateAborted:
+		return m, basic.SignalError(errors.New("form aborted"))
+	case huh.StateNormal:
+		newForm, cmd := m.form.Update(msg)
+		m.form = newForm.(*huh.Form)
+		return m, cmd
 	}
 
-	if m.form.State == huh.StateCompleted {
-		return m, basic.SignalRouter(
-			nil,
-			basic.Back,
-			basic.MsgParams{
-				"ok":           true,
-				"project_info": *m.info,
-			},
-		)
-	} else if m.form.State == huh.StateAborted {
-		return m, basic.SignalRouter(
-			nil,
-			basic.Back,
-			basic.MsgParams{
-				"ok": false,
-			},
-		)
-	}
-
-	return m, cmd
+	return m, basic.SignalRouter(
+		nil,
+		basic.Back,
+		ProjectInfoMsg{
+			ProjectInfo: *m.info,
+		},
+	)
 }
 
 func (m InfoForm) View() string {
 	return m.form.View()
 }
 
-func (info InfoForm) Inject(params basic.MsgParams) basic.RouterModel {
-	return info
-}
-
-func (info InfoForm) Return(params basic.MsgParams) (basic.RouterModel, tea.Cmd) {
+func (info InfoForm) Return(msg tea.Msg) (basic.RouterModel, tea.Cmd) {
 	return info, nil
 }

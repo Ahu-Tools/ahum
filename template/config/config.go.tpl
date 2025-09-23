@@ -4,26 +4,23 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 
-	{{ range .Infras}}
-		{{ range .Pkgs}}
+	{{ range .ConfigGroups}}
+		{{ range .GetConfigurables}}
+			{{range .Pkgs}}
 	"{{.}}"
+			{{end}}
 		{{end}}
 	{{ end }}
+	//@ahum: imports
 )
 
 // NewConfig loads configuration from environment variables or .env file.
 func CheckConfigs() {
-	// Load .env file if it exists
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found, relying on environment variables.")
-	}
-
 	viper.SetConfigName("config")
 	viper.SetConfigType("json")
-	viper.AddConfigPath(".")
+	viper.AddConfigPath("./config")
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
@@ -34,16 +31,6 @@ func CheckConfigs() {
 		}
 	}
 
-	host := viper.Get("api.server.host")
-	if _, ok := host.(string); !ok {
-		log.Fatal("NO API HOST SPECIFIED")
-	}
-
-	port := viper.Get("api.server.port")
-	if _, ok := port.(string); !ok {
-		log.Fatal("NO API PORT SPECIFIED")
-	}
-
 	secretKey := viper.Get("app.secret_key")
 	if _, ok := secretKey.(string); !ok {
 		log.Fatal("app.secret_key not set. Please provide it.")
@@ -52,10 +39,21 @@ func CheckConfigs() {
 }
 
 func ConfigInfras() error {
+	{{ range .ConfigGroups}}
+	
+	// @ahum:{{.Name}}.group
+		{{ range .GetConfigurables}}
 
-	{{ range .Infras}}
+	// @ahum:{{.Name}}.load
 	{{.Load}}
+	// @ahum:end.{{.Name}}.load
+
+		{{end}}
+	// @ahum:end.{{.Name}}.group
+
 	{{ end }}
+
+	//@ahum: loads
 
 	return nil
 }

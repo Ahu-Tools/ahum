@@ -6,18 +6,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-)
 
-type Edge uint
-type Database uint
-
-const (
-	CONNECT Edge = iota
-	GIN
-)
-
-const (
-	POSTGRES Database = iota
+	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
+	"github.com/Ahu-Tools/AhuM/pkg/util"
 )
 
 type ProjectInfo struct {
@@ -29,7 +20,8 @@ type ProjectInfo struct {
 type Project struct {
 	Info     ProjectInfo
 	Infras   []Infra
-	GenGuide GenerationGuide
+	Edges    []Edge
+	GenGuide gen.Guide
 }
 
 func NewProjectInfo(packageName, goVersion, rootPath string) *ProjectInfo {
@@ -40,18 +32,23 @@ func NewProjectInfo(packageName, goVersion, rootPath string) *ProjectInfo {
 	}
 }
 
-func NewProject(info ProjectInfo, infras []Infra) Project {
+func NewProject(info ProjectInfo, infras []Infra, edges []Edge) Project {
 	return Project{
 		Info:     info,
 		Infras:   infras,
-		GenGuide: DefaultGenerationGuide(info.RootPath),
+		GenGuide: *gen.DefaultGuide(info.RootPath),
+		Edges:    edges,
 	}
 }
 
 func LoadProjectInfo(path string) (ProjectInfo, error) {
-	rootPath, err := filepath.Abs(path)
-	if err != nil {
-		return ProjectInfo{}, err
+	rootPath := filepath.Clean(path)
+	if filepath.IsAbs(path) {
+		var err error
+		rootPath, err = filepath.Localize(path)
+		if err != nil {
+			return ProjectInfo{}, err
+		}
 	}
 
 	goModPath := filepath.Join(rootPath, "go.mod")
@@ -91,8 +88,69 @@ func LoadProject(path string) (*Project, error) {
 		return nil, err
 	}
 
-	// For now, we don't need to load infrastructure configurations
+	// For now, we don't need to load infrastructure and edge configurations
 	// to add a new service. So we can initialize it as empty.
-	project := NewProject(info, []Infra{})
+	project := NewProject(info, []Infra{}, []Edge{})
+	project.GenGuide = *gen.DefaultGuide(info.RootPath)
+	err = project.LoadEdges()
+	if err != nil {
+		return nil, err
+	}
+
+	err = project.LoadInfras()
+	if err != nil {
+		return nil, err
+	}
+
 	return &project, nil
+}
+
+func (p *Project) LoadEdges() error {
+	p.Edges = make([]Edge, 0)
+	for _, loader := range edgeLoaders {
+		edge, err := loader(*p, EdgesGroup)
+		if err, ok := err.(util.JsonError); ok {
+			if err.Code == util.NOT_FOUND_JERR {
+				continue
+			}
+		}
+		if err != nil {
+			return err
+		}
+		p.Edges = append(p.Edges, edge)
+	}
+	return nil
+}
+
+func (p *Project) LoadInfras() error {
+	p.Infras = make([]Infra, 0)
+	for _, loader := range infraLoaders {
+		infra, err := loader(*p, InfrasGroup)
+		if err, ok := err.(util.JsonError); ok {
+			if err.Code == util.NOT_FOUND_JERR {
+				continue
+			}
+		}
+		if err != nil {
+			return err
+		}
+		p.Infras = append(p.Infras, infra)
+	}
+	return nil
+}
+
+func (p *Project) GetEdgesByName() map[string]Edge {
+	edgesByName := make(map[string]Edge)
+	for _, edge := range p.Edges {
+		edgesByName[edge.Name()] = edge
+	}
+	return edgesByName
+}
+
+func (p *Project) GetInfrasByName() map[string]Infra {
+	infrasByName := make(map[string]Infra)
+	for _, infra := range p.Infras {
+		infrasByName[infra.Name()] = infra
+	}
+	return infrasByName
 }

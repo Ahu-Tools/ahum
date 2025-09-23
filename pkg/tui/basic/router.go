@@ -3,13 +3,14 @@ package basic
 import (
 	"github.com/Ahu-Tools/AhuM/pkg/util"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
-type MsgParams map[string]interface{}
 type RouteSignal uint
 
 const (
 	Quit RouteSignal = iota
+	Err
 	Back
 	Next
 	BackAndNext
@@ -17,28 +18,52 @@ const (
 
 type RouterModel interface {
 	tea.Model
-	Inject(params MsgParams) RouterModel            //Called on initialisation
-	Return(params MsgParams) (RouterModel, tea.Cmd) //Call on return
+	Return(msg tea.Msg) (RouterModel, tea.Cmd) //Call on return
 }
 
 type Router struct {
 	main     RouterModel
 	quitting bool
 	models   *util.Stack[RouterModel]
+	err      error
 }
 
 type RouteMsg struct {
 	model  RouterModel
 	signal RouteSignal
-	params MsgParams
+	msg    tea.Msg
+	err    error
 }
 
-func SignalRouter(model RouterModel, signal RouteSignal, params MsgParams) func() tea.Msg {
+func SignalRouter(model RouterModel, signal RouteSignal, msg tea.Msg) func() tea.Msg {
 	return func() tea.Msg {
 		return RouteMsg{
 			model,
 			signal,
-			params,
+			msg,
+			nil,
+		}
+	}
+}
+
+func SignalQuit() func() tea.Msg {
+	return func() tea.Msg {
+		return RouteMsg{
+			nil,
+			Quit,
+			nil,
+			nil,
+		}
+	}
+}
+
+func SignalError(err error) func() tea.Msg {
+	return func() tea.Msg {
+		return RouteMsg{
+			nil,
+			Err,
+			nil,
+			err,
 		}
 	}
 }
@@ -48,6 +73,7 @@ func NewRouter(init RouterModel) Router {
 	return Router{
 		main:   init,
 		models: stack,
+		err:    nil,
 	}
 }
 
@@ -66,7 +92,20 @@ func (m Router) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case RouteMsg:
 		switch msg.signal {
 		case Quit:
+			m.quitting = true
 			return m, tea.Quit
+
+		case Err:
+			oldModel, ok := m.models.Pop()
+			if !ok {
+				m.quitting = true
+				m.err = msg.err
+				return m, tea.Quit
+			}
+			m.main = oldModel
+			var cmd tea.Cmd
+			m.main, cmd = m.main.Return(msg.err)
+			return m, cmd
 
 		case Back:
 			oldModel, ok := m.models.Pop()
@@ -75,25 +114,25 @@ func (m Router) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			m.main = oldModel
 			var cmd tea.Cmd
-			m.main, cmd = m.main.Return(msg.params)
+			m.main, cmd = m.main.Return(msg.msg)
 			return m, cmd
 
 		case Next:
 			m.models.Push(m.main)
 			m.main = msg.model
-			m.main = m.main.Inject(msg.params)
 			cmd := m.main.Init()
-			updatedModel, cmd := m.main.Update(cmd())
-			m.main = updatedModel.(RouterModel)
-			return m, cmd
+			if msg.msg == nil {
+				return m, cmd
+			}
+			return m, tea.Batch(cmd, func() tea.Msg { return msg.msg })
 
 		case BackAndNext:
 			m.main = msg.model
-			m.main = m.main.Inject(msg.params)
 			cmd := m.main.Init()
-			updatedModel, cmd := m.main.Update(cmd())
-			m.main = updatedModel.(RouterModel)
-			return m, cmd
+			if msg.msg == nil {
+				return m, cmd
+			}
+			return m, tea.Batch(cmd, func() tea.Msg { return msg.msg })
 		}
 	}
 
@@ -104,8 +143,12 @@ func (m Router) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Router) View() string {
 	str := m.main.View()
-	if m.quitting {
-		str += "\n\nquitting\n"
+	if m.err != nil {
+		str = lipgloss.NewStyle().Foreground(lipgloss.Color(util.ErrorColor)).Render("Error: " + m.err.Error())
+		if m.quitting {
+			str += "\nquitting"
+		}
 	}
+
 	return str
 }
