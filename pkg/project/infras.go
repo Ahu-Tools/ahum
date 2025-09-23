@@ -51,6 +51,30 @@ func (p *Project) GenInfra(infra Infra, statusChan chan string) error {
 	return infra.Generate(statusChan, *infraGuide)
 }
 
+func (p *Project) AddInfra(infra Infra, statusChan chan string) error {
+	cfgGen, err := p.GetConfigGenGuide()
+	if err != nil {
+		return nil
+	}
+
+	err = config.AddConfigByGroup(InfrasGroup, infra, *cfgGen)
+	if err != nil {
+		return err
+	}
+
+	err = p.GenInfra(infra, statusChan)
+	if err != nil {
+		return err
+	}
+
+	err = p.GoSweep(statusChan)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (p *Project) GetInfraGenGuide(infra Infra) (*gen.Guide, error) {
 	infraPath := filepath.Join(p.GenGuide.RootPath, "/infrastructure/", infra.Name())
 	err := os.Mkdir(infraPath, p.GenGuide.DirPerms)
