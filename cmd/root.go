@@ -45,6 +45,8 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.ahum.yaml)")
+	rootCmd.PersistentFlags().StringP("path", "p", ".", "project root path")
+	viper.BindPFlag("projectPath", rootCmd.PersistentFlags().Lookup("path"))
 }
 
 // initConfig reads in config file and ENV variables if set.

@@ -6,7 +6,6 @@ package gin
 import (
 	"github.com/Ahu-Tools/AhuM/cmd/gin/route"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // ginCmd represents the gin command
@@ -28,6 +27,4 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// ginCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	GinCmd.PersistentFlags().StringP("path", "p", ".", "project root path")
-	viper.BindPFlag("projectPath", GinCmd.PersistentFlags().Lookup("path"))
 }
