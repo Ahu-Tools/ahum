@@ -30,7 +30,7 @@ Here's a breakdown of the project's development milestones:
 
 ### 3. Create an Ahu service (chain, service, data) ✅
 
-### 4. Create an Ahu Edge
+### 4. Create an Ahu Edge ✅
     - 4.1. Gin (default) ✅
     - 4.2. Connect ✅
         - 4.1.2. Generate Connect files ✅
