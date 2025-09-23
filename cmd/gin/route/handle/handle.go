@@ -7,8 +7,8 @@ import "github.com/spf13/cobra"
 
 var Cmd = &cobra.Command{
 	Use:   "handle",
-	Short: "short descriptions",
-	Long:  "long descriptions",
+	Short: "Manage Gin route handlers",
+	Long:  "The 'handle' command provides subcommands to manage handlers within Gin routes, such as adding new handler methods.",
 }
 
 func init() {

@@ -7,8 +7,8 @@ import "github.com/spf13/cobra"
 
 var Cmd = &cobra.Command{
 	Use:   "entity",
-	Short: "short descriptions",
-	Long:  "long descriptions",
+	Short: "Manage Gin route entities",
+	Long:  "The 'entity' command provides subcommands to manage entities within Gin routes, such as adding new entities.",
 }
 
 func init() {

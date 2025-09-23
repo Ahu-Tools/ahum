@@ -12,8 +12,8 @@ import (
 
 var addCmd = &cobra.Command{
 	Use:   "add [version_name] [entity_name]",
-	Short: "short descriptions",
-	Long:  "long descriptions",
+	Short: "Add a new entity to a specific Gin route version",
+	Long:  "The 'add' command creates a new entity within a specified Gin route version, generating the necessary files and configurations.",
 	Args:  cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		pj, err := project.LoadProject(viper.GetString("projectPath"))
