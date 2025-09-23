@@ -6,6 +6,7 @@ package service
 import (
 	"fmt"
 
+	"github.com/Ahu-Tools/AhuM/cmd/connect/service/version"
 	"github.com/spf13/cobra"
 )
 
@@ -22,6 +23,7 @@ You can use it to add new versions to your API.`,
 
 func init() {
 	ServiceCmd.AddCommand(addCmd)
+	ServiceCmd.AddCommand(version.Cmd)
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
