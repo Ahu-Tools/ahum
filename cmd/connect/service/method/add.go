@@ -12,9 +12,10 @@ import (
 
 var addCmd = &cobra.Command{
 	Use:   "add [method_name] [service_name] [version_name]",
-	Short: "short descriptions",
-	Long:  "long descriptions",
-	Args:  cobra.ExactArgs(3),
+	Short: "Add a new method to a Connect service version",
+	Long: `The 'add' command creates a new method within a specified Connect service and version.
+This will generate the necessary files and update the project configuration.`,
+	Args: cobra.ExactArgs(3),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		pj, err := project.LoadProject(viper.GetString("projectPath"))
 		if err != nil {

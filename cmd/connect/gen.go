@@ -12,9 +12,9 @@ import (
 
 var genCmd = &cobra.Command{
 	Use:   "gen",
-	Short: "Commands for manaconnectg Connect server and routes",
-	Long: `The 'connect' command provides a set of tools for manaconnectg the Connect web server within your application.
-You can use it to add new routes, new versions, and perform other server-related tasks.`,
+	Short: "Generate Connect related files (e.g., protobuf, Go stubs)",
+	Long: `The 'gen' command generates various files required for Connect, including protobuf definitions and Go stubs.
+It uses the project configuration to determine what needs to be generated.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		pj, err := project.LoadProject(viper.GetString("projectPath"))
 		if err != nil {

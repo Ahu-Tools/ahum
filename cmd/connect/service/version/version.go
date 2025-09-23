@@ -7,9 +7,9 @@ import "github.com/spf13/cobra"
 
 var Cmd = &cobra.Command{
 	Use:   "version",
-	Short: "Commands for manaconnectg Connect server and routes",
-	Long: `The 'connect' command provides a set of tools for manaconnectg the Connect web server within your application.
-You can use it to add new routes, new versions, and perform other server-related tasks.`,
+	Short: "Manage Connect service versions",
+	Long: `The 'version' command provides subcommands for managing versions of Connect services.
+You can use it to add new versions to an existing service.`,
 }
 
 func init() {

@@ -14,9 +14,9 @@ import (
 // ServiceCmd represents the service command
 var ServiceCmd = &cobra.Command{
 	Use:   "service",
-	Short: "Commands for managing Gin services",
-	Long: `The 'service' command provides subcommands for managing services in your Gin application.
-You can use it to add new versions to your API.`,
+	Short: "Manage Connect services",
+	Long: `The 'service' command provides subcommands for managing Connect services.
+You can use it to add new services, versions, and methods.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("service called")
 	},

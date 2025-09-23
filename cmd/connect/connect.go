@@ -11,8 +11,8 @@ import (
 // connectCmd represents the connect command
 var Cmd = &cobra.Command{
 	Use:   "connect",
-	Short: "Commands for manaconnectg Connect server and routes",
-	Long: `The 'connect' command provides a set of tools for manaconnectg the Connect web server within your application.
+	Short: "Manage Connect server and routes",
+	Long: `The 'connect' command provides a set of tools for managing the Connect server within your application.
 You can use it to add new routes, new versions, and perform other server-related tasks.`,
 }
 
