@@ -9,6 +9,7 @@ import (
 
 	"github.com/Ahu-Tools/AhuM/cmd/edge"
 	"github.com/Ahu-Tools/AhuM/cmd/gin"
+	"github.com/Ahu-Tools/AhuM/cmd/infra"
 	"github.com/Ahu-Tools/AhuM/cmd/initialise"
 	"github.com/Ahu-Tools/AhuM/cmd/service"
 	"github.com/spf13/cobra"
@@ -36,6 +37,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.AddCommand(initialise.InitCmd)
+	rootCmd.AddCommand(infra.Cmd)
 	rootCmd.AddCommand(edge.EdgeCmd)
 	rootCmd.AddCommand(service.ServiceCmd)
 	rootCmd.AddCommand(gin.GinCmd)
