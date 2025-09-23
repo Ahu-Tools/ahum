@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/Ahu-Tools/AhuM/cmd/gin/route/entity"
+	"github.com/Ahu-Tools/AhuM/cmd/gin/route/handle"
 	"github.com/Ahu-Tools/AhuM/cmd/gin/route/version"
 	"github.com/spf13/cobra"
 )
@@ -25,6 +26,7 @@ You can use it to add new versions to your API.`,
 func init() {
 	RouteCmd.AddCommand(version.VersionCmd)
 	RouteCmd.AddCommand(entity.Cmd)
+	RouteCmd.AddCommand(handle.Cmd)
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
