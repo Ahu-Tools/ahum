@@ -41,6 +41,12 @@ func (p Project) Generate(statusChan chan string) error {
 		return err
 	}
 
+	statusChan <- "Generating main.go..."
+	err = p.GenerateMain()
+	if err != nil {
+		return err
+	}
+
 	statusChan <- "Adding edge..."
 	err = p.GenEdges(statusChan)
 	if err != nil {
@@ -59,6 +65,11 @@ func (p Project) Generate(statusChan chan string) error {
 	}
 
 	return nil
+}
+
+func (p Project) GenerateMain() error {
+	mainPath := filepath.Join(p.GenGuide.RootPath, "/main.go")
+	return util.ParseTemplateFile("template/main/main.go.tpl", p.Info, mainPath)
 }
 
 func (p Project) GenerateConfig(statusChan chan string) error {
@@ -150,7 +161,7 @@ func createBasicDirs(genGuide gen.Guide, infras []Infra) error {
 		return err
 	}
 
-	err = os.MkdirAll(genGuide.RootPath+"/cmd/api", genGuide.DirPerms)
+	err = os.Mkdir(genGuide.RootPath+"/cmd", genGuide.DirPerms)
 	if err != nil {
 		return err
 	}
