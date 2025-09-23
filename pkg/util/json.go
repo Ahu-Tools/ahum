@@ -29,8 +29,8 @@ func (err JsonError) Error() string {
 	return err.Msg.Error()
 }
 
-func NewJsonError(c JError, m error) *JsonError {
-	return &JsonError{
+func NewJsonError(c JError, m error) JsonError {
+	return JsonError{
 		c,
 		m,
 	}
