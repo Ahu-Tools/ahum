@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Ahu-Tools/AhuM/cmd/connect"
 	"github.com/Ahu-Tools/AhuM/cmd/edge"
 	"github.com/Ahu-Tools/AhuM/cmd/gin"
 	"github.com/Ahu-Tools/AhuM/cmd/infra"
@@ -41,6 +42,7 @@ func init() {
 	rootCmd.AddCommand(edge.EdgeCmd)
 	rootCmd.AddCommand(service.ServiceCmd)
 	rootCmd.AddCommand(gin.GinCmd)
+	rootCmd.AddCommand(connect.Cmd)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
