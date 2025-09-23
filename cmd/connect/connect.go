@@ -18,6 +18,7 @@ You can use it to add new routes, new versions, and perform other server-related
 
 func init() {
 	Cmd.AddCommand(service.ServiceCmd)
+	Cmd.AddCommand(genCmd)
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
