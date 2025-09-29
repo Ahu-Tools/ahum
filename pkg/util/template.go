@@ -6,12 +6,14 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+
+	templates "github.com/Ahu-Tools/ahum/template"
 )
 
 func ParseTemplateString(tmplPath string, data any) (string, error) {
 	tmplName := filepath.Base(tmplPath)
 
-	tmpl, err := template.ParseFiles(tmplPath)
+	tmpl, err := template.ParseFS(templates.TemplateFS, tmplPath)
 	if err != nil {
 		return "", err
 	}
@@ -30,7 +32,7 @@ func ParseTemplateFile(tmplPath string, data any, saveTo string) error {
 	rubbish := strings.Split(tmplPath, "/")
 	tmplName := rubbish[len(rubbish)-1]
 
-	tmpl, err := template.ParseFiles(tmplPath)
+	tmpl, err := template.ParseFS(templates.TemplateFS, tmplPath)
 	if err != nil {
 		return err
 	}
