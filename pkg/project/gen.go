@@ -69,7 +69,7 @@ func (p Project) Generate(statusChan chan string) error {
 
 func (p Project) GenerateMain() error {
 	mainPath := filepath.Join(p.GenGuide.RootPath, "/main.go")
-	return util.ParseTemplateFile("template/main/main.go.tpl", p.Info, mainPath)
+	return util.ParseTemplateFile("main/main.go.tpl", p.Info, mainPath)
 }
 
 func (p Project) GenerateConfig(statusChan chan string) error {
@@ -91,7 +91,7 @@ func (p Project) GenerateConfig(statusChan chan string) error {
 
 func (p Project) GenerateEdge() error {
 	edgePath := filepath.Join(p.GenGuide.RootPath, "/edge/edge.go")
-	return util.ParseTemplateFile("template/edge/edge.go.tpl", p.Info, edgePath)
+	return util.ParseTemplateFile("edge/edge.go.tpl", p.Info, edgePath)
 }
 
 func (p Project) GoInit() error {

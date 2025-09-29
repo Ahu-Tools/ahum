@@ -47,17 +47,17 @@ func NewConnect(pj *project.ProjectInfo, ConnectConfig ConnectConfig) *Connect {
 }
 
 func (g *Connect) Generate(status chan string, genGuide gen.Guide) error {
-	err := util.ParseTemplateFile("template/connect/connect.go.tpl", g.pj, genGuide.RootPath+"/connect.go")
+	err := util.ParseTemplateFile("connect/connect.go.tpl", g.pj, genGuide.RootPath+"/connect.go")
 	if err != nil {
 		return err
 	}
 
-	err = util.ParseTemplateFile("template/connect/buf.yaml.tpl", g.pj, genGuide.RootPath+"/buf.yaml")
+	err = util.ParseTemplateFile("connect/buf.yaml.tpl", g.pj, genGuide.RootPath+"/buf.yaml")
 	if err != nil {
 		return err
 	}
 
-	err = util.ParseTemplateFile("template/connect/buf.gen.yaml.tpl", g.pj, genGuide.RootPath+"/buf.gen.yaml")
+	err = util.ParseTemplateFile("connect/buf.gen.yaml.tpl", g.pj, genGuide.RootPath+"/buf.gen.yaml")
 	if err != nil {
 		return err
 	}
@@ -87,8 +87,8 @@ func (g *Connect) AddMethod(methodName, serviceName, versionName string, genGuid
 	payload := map[string]any{
 		"MethodName": methName,
 	}
-	method, _ := util.ParseTemplateString("template/connect/method.proto.tpl", payload)
-	messages, _ := util.ParseTemplateString("template/connect/messages.proto.tpl", payload)
+	method, _ := util.ParseTemplateString("connect/method.proto.tpl", payload)
+	messages, _ := util.ParseTemplateString("connect/messages.proto.tpl", payload)
 
 	protoPath := filepath.Join(genGuide.RootPath, svcName, vName, strcase.ToSnakeWithIgnore(serviceName, ".")+".proto")
 	insertion := map[string]string{
@@ -117,7 +117,7 @@ func (g *Connect) implementMethod(serviceName, versionName, methodName string, g
 		"MethodName":  methodName,
 		"Lowerer":     util.ToPkgName,
 	}
-	method, _ := util.ParseTemplateString("template/connect/method.go.tpl", payload)
+	method, _ := util.ParseTemplateString("connect/method.go.tpl", payload)
 	edgePath := filepath.Join(genGuide.RootPath, serviceName, versionName, "edge.go")
 	insertions := map[string]string{
 		"methods": method,
@@ -145,7 +145,7 @@ func (g *Connect) AddVersion(versionName, serviceName string, genGuide gen.Guide
 	}
 
 	protoPath := filepath.Join(vPath, strcase.ToSnakeWithIgnore(serviceName, ".")+".proto")
-	err = util.ParseTemplateFile("template/connect/edge.proto.tpl", payload, protoPath)
+	err = util.ParseTemplateFile("connect/edge.proto.tpl", payload, protoPath)
 	if err != nil {
 		return err
 	}
@@ -156,13 +156,13 @@ func (g *Connect) AddVersion(versionName, serviceName string, genGuide gen.Guide
 	}
 
 	edgePath := filepath.Join(vPath, "edge.go")
-	err = util.ParseTemplateFile("template/connect/edge.go.tpl", payload, edgePath)
+	err = util.ParseTemplateFile("connect/edge.go.tpl", payload, edgePath)
 	if err != nil {
 		return err
 	}
 
 	vRegPath := filepath.Join(vPath, "registrar.go")
-	err = util.ParseTemplateFile("template/connect/version.registrar.go.tpl", payload, vRegPath)
+	err = util.ParseTemplateFile("connect/version.registrar.go.tpl", payload, vRegPath)
 	if err != nil {
 		return nil
 	}
@@ -207,7 +207,7 @@ func (g *Connect) AddService(serviceName string, genGuide gen.Guide) error {
 		"Lowerer":     util.ToPkgName,
 	}
 
-	err = util.ParseTemplateFile("template/connect/service.registrar.go.tpl", payload, svcRegPath)
+	err = util.ParseTemplateFile("connect/service.registrar.go.tpl", payload, svcRegPath)
 	if err != nil {
 		return err
 	}

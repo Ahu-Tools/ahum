@@ -85,7 +85,7 @@ func (s Service) parseTemplate(pkg string, template string) error {
 	path := filepath.Join(r, fmt.Sprintf("/%s.go", template))
 
 	return util.ParseTemplateFile(
-		fmt.Sprintf("template/%s/%s.go.tpl", pkg, template), tmplData, path)
+		fmt.Sprintf("%s/%s.go.tpl", pkg, template), tmplData, path)
 }
 
 func (s Service) generateBasicDirs() error {

@@ -42,7 +42,7 @@ func (r *Redis) Load() (string, error) {
 
 func (r *Redis) Generate(status chan string, genGuide gen.Guide) error {
 	clientPath := filepath.Join(genGuide.RootPath, "client.go")
-	return util.ParseTemplateFile("template/redis/client.go.tpl", r.pj, clientPath)
+	return util.ParseTemplateFile("redis/client.go.tpl", r.pj, clientPath)
 }
 
 func init() {

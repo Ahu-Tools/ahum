@@ -53,7 +53,7 @@ func LoadGinFromProject(pj project.Project) *Gin {
 }
 
 func (g *Gin) Generate(status chan string, genGuide gen.Guide) error {
-	err := util.ParseTemplateFile("template/gin/gin.go.tpl", g.pj, genGuide.RootPath+"/gin.go")
+	err := util.ParseTemplateFile("gin/gin.go.tpl", g.pj, genGuide.RootPath+"/gin.go")
 	if err != nil {
 		return err
 	}
@@ -84,7 +84,7 @@ func (g *Gin) AddHandler(versionName, entityName, handlerName string, genGuide g
 	payload := map[string]any{
 		"HandlerName": handlerName,
 	}
-	handleFunc, _ := util.ParseTemplateString("template/gin/entity.handle_func.go.tpl", payload)
+	handleFunc, _ := util.ParseTemplateString("gin/entity.handle_func.go.tpl", payload)
 	insertions := map[string]string{
 		"handlers": handleFunc,
 	}
@@ -120,13 +120,13 @@ func (g *Gin) AddEntity(versionName, entityName string, genGuide gen.Guide) erro
 	payload := map[string]string{
 		"EntityName": entityName,
 	}
-	err = util.ParseTemplateFile("template/gin/entity.route.go.tpl", payload, eRoutePath)
+	err = util.ParseTemplateFile("gin/entity.route.go.tpl", payload, eRoutePath)
 	if err != nil {
 		return err
 	}
 
 	eHandlerPath := filepath.Join(ePath, "handler.go")
-	err = util.ParseTemplateFile("template/gin/entity.handler.go.tpl", payload, eHandlerPath)
+	err = util.ParseTemplateFile("gin/entity.handler.go.tpl", payload, eHandlerPath)
 	if err != nil {
 		return err
 	}
@@ -160,7 +160,7 @@ func (g *Gin) AddVersion(versionName string, genGuide gen.Guide) error {
 		"VersionName": versionName,
 	}
 
-	err = util.ParseTemplateFile("template/gin/version.registrar.go.tpl", payload, vRegPath)
+	err = util.ParseTemplateFile("gin/version.registrar.go.tpl", payload, vRegPath)
 	if err != nil {
 		return err
 	}
