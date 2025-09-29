@@ -2,10 +2,9 @@ package postgres
 
 import (
 	"os"
-	"path/filepath"
-	"text/template"
 
 	gen "github.com/Ahu-Tools/ahum/pkg/generation"
+	"github.com/Ahu-Tools/ahum/pkg/util"
 )
 
 func (p Postgres) Generate(statusChan chan string, genGuide gen.Guide) error {
@@ -45,39 +44,15 @@ func (p Postgres) generateBasicFiles(genGuide gen.Guide) error {
 func generateConfig(genGuide gen.Guide) error {
 	//Generate config.go using config.go.tpl template
 	tmplName := "config.go.tpl"
-	tmplNamePath := "template/infrastructures/postgres/" + tmplName
+	tmplNamePath := "infrastructures/postgres/" + tmplName
 
-	tmpl, err := template.ParseFiles(tmplNamePath)
-	if err != nil {
-		return err
-	}
-
-	path := filepath.Join(genGuide.RootPath + "/config.go")
-
-	f, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-
-	return tmpl.ExecuteTemplate(f, tmplName, nil)
+	return util.ParseTemplateFile(tmplNamePath, nil, genGuide.RootPath+"/config.go")
 }
 
 func generateConnection(genGuide gen.Guide) error {
 	//Generate connection.go using connection.go.tpl template
 	tmplName := "connection.go.tpl"
-	tmplNamePath := "template/infrastructures/postgres/" + tmplName
+	tmplNamePath := "infrastructures/postgres/" + tmplName
 
-	tmpl, err := template.ParseFiles(tmplNamePath)
-	if err != nil {
-		return err
-	}
-
-	path := filepath.Join(genGuide.RootPath + "/connection.go")
-
-	f, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-
-	return tmpl.ExecuteTemplate(f, tmplName, nil)
+	return util.ParseTemplateFile(tmplNamePath, nil, genGuide.RootPath+"/connection.go")
 }

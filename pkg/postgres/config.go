@@ -1,13 +1,12 @@
 package postgres
 
 import (
-	"bytes"
-	"os"
+	"path/filepath"
 	"strings"
-	"text/template"
 
 	"github.com/Ahu-Tools/ahum/pkg/config"
 	"github.com/Ahu-Tools/ahum/pkg/project"
+	"github.com/Ahu-Tools/ahum/pkg/util"
 )
 
 const Name = "postgres"
@@ -26,24 +25,19 @@ func NewPostgres(projectInfo project.ProjectInfo, postgresJSONConfig PostgresCon
 
 func (c Postgres) Pkgs() ([]string, error) {
 	tmplName := "config_imports.go.tpl"
-	tmplPath := "template/infrastructures/postgres/" + tmplName
-	tmpl, err := template.ParseFiles(tmplPath)
-	if err != nil {
-		return nil, err
-	}
-
-	var importsBytes bytes.Buffer
+	tmplPath := "infrastructures/postgres/" + tmplName
 
 	data := map[string]string{
 		"PackageName": c.projectInfo.PackageName,
 		"Name":        c.Name(),
 	}
-	err = tmpl.ExecuteTemplate(&importsBytes, tmplName, data)
+
+	importsStr, err := util.ParseTemplateString(tmplPath, data)
 	if err != nil {
 		return nil, err
 	}
 
-	imports := strings.Split(importsBytes.String(), "\n")
+	imports := strings.Split(importsStr, "\n")
 	for i, l := range imports {
 		imports[i] = strings.TrimSpace(l)
 	}
@@ -52,11 +46,9 @@ func (c Postgres) Pkgs() ([]string, error) {
 }
 
 func (c Postgres) Load() (string, error) {
-	resultBytes, err := os.ReadFile("template/infrastructures/postgres/loadconfig.go.tpl")
-	if err != nil {
-		return "", err
-	}
-	return string(resultBytes), nil
+	path := filepath.Join("infrastructures/postgres/loadconfig.go.tpl")
+
+	return util.ParseTemplateString(path, nil)
 }
 
 func (pc Postgres) Name() string {
