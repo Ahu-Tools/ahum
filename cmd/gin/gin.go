@@ -4,7 +4,7 @@ Copyright © 2025 Sina Sadeghi sina.sadeghi83@gmail.com
 package gin
 
 import (
-	"github.com/Ahu-Tools/AhuM/cmd/gin/route"
+	"github.com/Ahu-Tools/ahum/cmd/gin/route"
 	"github.com/spf13/cobra"
 )
 

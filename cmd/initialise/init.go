@@ -4,8 +4,8 @@ Copyright © 2025 Sina Sadeghi sina.sadeghi83@gmail.com
 package initialise
 
 import (
-	"github.com/Ahu-Tools/AhuM/pkg/tui/basic"
-	tproj "github.com/Ahu-Tools/AhuM/pkg/tui/project"
+	"github.com/Ahu-Tools/ahum/pkg/tui/basic"
+	tproj "github.com/Ahu-Tools/ahum/pkg/tui/project"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )

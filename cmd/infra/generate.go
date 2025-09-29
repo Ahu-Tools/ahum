@@ -4,8 +4,8 @@ Copyright © 2025 Sina Sadeghi sina.sadeghi83@gmail.com
 package infra
 
 import (
-	"github.com/Ahu-Tools/AhuM/pkg/tui/basic"
-	"github.com/Ahu-Tools/AhuM/pkg/tui/infra"
+	"github.com/Ahu-Tools/ahum/pkg/tui/basic"
+	"github.com/Ahu-Tools/ahum/pkg/tui/infra"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

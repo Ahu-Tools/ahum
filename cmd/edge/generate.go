@@ -4,8 +4,8 @@ Copyright © 2025 Sina Sadeghi sina.sadeghi83@gmail.com
 package edge
 
 import (
-	"github.com/Ahu-Tools/AhuM/pkg/tui/basic"
-	"github.com/Ahu-Tools/AhuM/pkg/tui/edge"
+	"github.com/Ahu-Tools/ahum/pkg/tui/basic"
+	"github.com/Ahu-Tools/ahum/pkg/tui/edge"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

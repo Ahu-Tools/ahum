@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
+	gen "github.com/Ahu-Tools/ahum/pkg/generation"
 )
 
 type ConfigMap map[string]interface{}

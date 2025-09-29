@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Ahu-Tools/AhuM/pkg/tui/service"
+	"github.com/Ahu-Tools/ahum/pkg/tui/service"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )

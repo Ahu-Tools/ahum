@@ -3,8 +3,8 @@ package service
 import (
 	"fmt"
 
-	"github.com/Ahu-Tools/AhuM/pkg/project"
-	"github.com/Ahu-Tools/AhuM/pkg/service"
+	"github.com/Ahu-Tools/ahum/pkg/project"
+	"github.com/Ahu-Tools/ahum/pkg/service"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/huh"

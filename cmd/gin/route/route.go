@@ -6,9 +6,9 @@ package route
 import (
 	"fmt"
 
-	"github.com/Ahu-Tools/AhuM/cmd/gin/route/entity"
-	"github.com/Ahu-Tools/AhuM/cmd/gin/route/handle"
-	"github.com/Ahu-Tools/AhuM/cmd/gin/route/version"
+	"github.com/Ahu-Tools/ahum/cmd/gin/route/entity"
+	"github.com/Ahu-Tools/ahum/cmd/gin/route/handle"
+	"github.com/Ahu-Tools/ahum/cmd/gin/route/version"
 	"github.com/spf13/cobra"
 )
 

@@ -4,8 +4,8 @@ Copyright © 2025 Sina Sadeghi sina.sadeghi83@gmail.com
 package entity
 
 import (
-	"github.com/Ahu-Tools/AhuM/pkg/gin"
-	"github.com/Ahu-Tools/AhuM/pkg/project"
+	"github.com/Ahu-Tools/ahum/pkg/gin"
+	"github.com/Ahu-Tools/ahum/pkg/project"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

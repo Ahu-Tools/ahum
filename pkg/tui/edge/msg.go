@@ -1,6 +1,6 @@
 package edge
 
-import "github.com/Ahu-Tools/AhuM/pkg/project"
+import "github.com/Ahu-Tools/ahum/pkg/project"
 
 type EdgesMsg struct {
 	Ok    bool

@@ -7,12 +7,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Ahu-Tools/AhuM/cmd/connect"
-	"github.com/Ahu-Tools/AhuM/cmd/edge"
-	"github.com/Ahu-Tools/AhuM/cmd/gin"
-	"github.com/Ahu-Tools/AhuM/cmd/infra"
-	"github.com/Ahu-Tools/AhuM/cmd/initialise"
-	"github.com/Ahu-Tools/AhuM/cmd/service"
+	"github.com/Ahu-Tools/ahum/cmd/connect"
+	"github.com/Ahu-Tools/ahum/cmd/edge"
+	"github.com/Ahu-Tools/ahum/cmd/gin"
+	"github.com/Ahu-Tools/ahum/cmd/infra"
+	"github.com/Ahu-Tools/ahum/cmd/initialise"
+	"github.com/Ahu-Tools/ahum/cmd/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

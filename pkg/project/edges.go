@@ -5,9 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Ahu-Tools/AhuM/pkg/config"
-	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
-	"github.com/Ahu-Tools/AhuM/pkg/util"
+	"github.com/Ahu-Tools/ahum/pkg/config"
+	gen "github.com/Ahu-Tools/ahum/pkg/generation"
+	"github.com/Ahu-Tools/ahum/pkg/util"
 )
 
 const EdgesGroup = "edges"

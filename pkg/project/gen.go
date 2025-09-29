@@ -6,8 +6,8 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
-	"github.com/Ahu-Tools/AhuM/pkg/util"
+	gen "github.com/Ahu-Tools/ahum/pkg/generation"
+	"github.com/Ahu-Tools/ahum/pkg/util"
 )
 
 func (p Project) Generate(statusChan chan string) error {

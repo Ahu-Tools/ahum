@@ -3,9 +3,9 @@ package gin
 import (
 	"errors"
 
-	"github.com/Ahu-Tools/AhuM/pkg/gin"
-	"github.com/Ahu-Tools/AhuM/pkg/project"
-	"github.com/Ahu-Tools/AhuM/pkg/tui/basic"
+	"github.com/Ahu-Tools/ahum/pkg/gin"
+	"github.com/Ahu-Tools/ahum/pkg/project"
+	"github.com/Ahu-Tools/ahum/pkg/tui/basic"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/huh"
 )

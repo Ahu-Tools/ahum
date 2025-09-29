@@ -7,7 +7,7 @@ AhuM is a command-line interface (CLI) tool designed to streamline the developme
 To install AhuM, use the following Go command:
 
 ```bash
-go install github.com/Ahu-Tools/AhuM@latest
+go install github.com/Ahu-Tools/ahum@latest
 ```
 
 ## Milestones

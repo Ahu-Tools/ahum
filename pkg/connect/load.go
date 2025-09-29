@@ -1,6 +1,6 @@
 package connect
 
-import "github.com/Ahu-Tools/AhuM/pkg/project"
+import "github.com/Ahu-Tools/ahum/pkg/project"
 
 func LoadConnectFromProject(p project.Project) *Connect {
 	edges := p.GetEdgesByName()

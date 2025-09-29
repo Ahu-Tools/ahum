@@ -1,6 +1,6 @@
 package project
 
-import "github.com/Ahu-Tools/AhuM/pkg/project"
+import "github.com/Ahu-Tools/ahum/pkg/project"
 
 type ProjectInfoMsg struct {
 	Ok          bool

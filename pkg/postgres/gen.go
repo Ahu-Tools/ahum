@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"text/template"
 
-	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
+	gen "github.com/Ahu-Tools/ahum/pkg/generation"
 )
 
 func (p Postgres) Generate(statusChan chan string, genGuide gen.Guide) error {

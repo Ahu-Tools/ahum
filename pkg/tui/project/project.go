@@ -1,11 +1,11 @@
 package project
 
 import (
-	"github.com/Ahu-Tools/AhuM/pkg/project"
-	"github.com/Ahu-Tools/AhuM/pkg/tui/basic"
-	"github.com/Ahu-Tools/AhuM/pkg/tui/edge"
-	"github.com/Ahu-Tools/AhuM/pkg/tui/infra"
-	"github.com/Ahu-Tools/AhuM/pkg/util"
+	"github.com/Ahu-Tools/ahum/pkg/project"
+	"github.com/Ahu-Tools/ahum/pkg/tui/basic"
+	"github.com/Ahu-Tools/ahum/pkg/tui/edge"
+	"github.com/Ahu-Tools/ahum/pkg/tui/infra"
+	"github.com/Ahu-Tools/ahum/pkg/util"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"

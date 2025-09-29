@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Ahu-Tools/AhuM/pkg/project"
-	"github.com/Ahu-Tools/AhuM/pkg/util"
+	"github.com/Ahu-Tools/ahum/pkg/project"
+	"github.com/Ahu-Tools/ahum/pkg/util"
 )
 
 type ServiceData struct {

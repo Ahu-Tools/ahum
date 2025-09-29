@@ -1,8 +1,8 @@
 package connect
 
 import (
-	"github.com/Ahu-Tools/AhuM/pkg/config"
-	"github.com/Ahu-Tools/AhuM/pkg/project"
+	"github.com/Ahu-Tools/ahum/pkg/config"
+	"github.com/Ahu-Tools/ahum/pkg/project"
 )
 
 const Name = "connect"

@@ -1,4 +1,4 @@
-module github.com/Ahu-Tools/AhuM
+module github.com/Ahu-Tools/ahum
 
 go 1.24.6
 

@@ -6,8 +6,8 @@ package service
 import (
 	"fmt"
 
-	"github.com/Ahu-Tools/AhuM/cmd/connect/service/method"
-	"github.com/Ahu-Tools/AhuM/cmd/connect/service/version"
+	"github.com/Ahu-Tools/ahum/cmd/connect/service/method"
+	"github.com/Ahu-Tools/ahum/cmd/connect/service/version"
 	"github.com/spf13/cobra"
 )
 

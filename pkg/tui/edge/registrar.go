@@ -1,10 +1,10 @@
 package edge
 
 import (
-	"github.com/Ahu-Tools/AhuM/pkg/project"
-	"github.com/Ahu-Tools/AhuM/pkg/tui/basic"
-	"github.com/Ahu-Tools/AhuM/pkg/tui/connect"
-	"github.com/Ahu-Tools/AhuM/pkg/tui/gin"
+	"github.com/Ahu-Tools/ahum/pkg/project"
+	"github.com/Ahu-Tools/ahum/pkg/tui/basic"
+	"github.com/Ahu-Tools/ahum/pkg/tui/connect"
+	"github.com/Ahu-Tools/ahum/pkg/tui/gin"
 	"github.com/charmbracelet/huh"
 )
 

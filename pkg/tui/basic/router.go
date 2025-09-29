@@ -1,7 +1,7 @@
 package basic
 
 import (
-	"github.com/Ahu-Tools/AhuM/pkg/util"
+	"github.com/Ahu-Tools/ahum/pkg/util"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )

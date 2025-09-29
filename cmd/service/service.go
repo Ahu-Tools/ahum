@@ -4,7 +4,7 @@ Copyright © 2025 Sina Sadeghi sina.sadeghi83@gmail.com
 package service
 
 import (
-	"github.com/Ahu-Tools/AhuM/cmd/service/create"
+	"github.com/Ahu-Tools/ahum/cmd/service/create"
 	"github.com/spf13/cobra"
 )
 

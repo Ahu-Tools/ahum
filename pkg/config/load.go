@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
-	"github.com/Ahu-Tools/AhuM/pkg/util"
+	gen "github.com/Ahu-Tools/ahum/pkg/generation"
+	"github.com/Ahu-Tools/ahum/pkg/util"
 )
 
 func LoadConfigByGroup[T any](group string, cfgble Configurable, genGuide gen.Guide) (*T, error) {

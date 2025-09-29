@@ -3,10 +3,10 @@ package redis
 import (
 	"path/filepath"
 
-	"github.com/Ahu-Tools/AhuM/pkg/config"
-	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
-	"github.com/Ahu-Tools/AhuM/pkg/project"
-	"github.com/Ahu-Tools/AhuM/pkg/util"
+	"github.com/Ahu-Tools/ahum/pkg/config"
+	gen "github.com/Ahu-Tools/ahum/pkg/generation"
+	"github.com/Ahu-Tools/ahum/pkg/project"
+	"github.com/Ahu-Tools/ahum/pkg/util"
 )
 
 type Redis struct {

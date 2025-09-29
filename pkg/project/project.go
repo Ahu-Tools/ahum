@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	gen "github.com/Ahu-Tools/AhuM/pkg/generation"
-	"github.com/Ahu-Tools/AhuM/pkg/util"
+	gen "github.com/Ahu-Tools/ahum/pkg/generation"
+	"github.com/Ahu-Tools/ahum/pkg/util"
 )
 
 type ProjectInfo struct {
