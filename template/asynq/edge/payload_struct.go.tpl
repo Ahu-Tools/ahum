@@ -1,0 +1,2 @@
+type {{.TaskName}}Payload struct {
+}
