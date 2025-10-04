@@ -11,8 +11,12 @@ import (
 
 var addCmd = &cobra.Command{
 	Use:   "add",
-	Short: "short description",
-	Long:  "long description",
+	Short: "Add a new module or task handler to an asynq edge",
+	Long: `Add a new module or task handler to an asynq edge.
+
+Usage:
+  ahum asynq edge add module <version> <module-name>
+  ahum asynq edge add task <version> <module-name> <task-name>`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
 			return fmt.Errorf("invalid option choosed")

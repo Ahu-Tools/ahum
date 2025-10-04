@@ -7,8 +7,8 @@ import (
 
 var Cmd = &cobra.Command{
 	Use:   "asynq",
-	Short: "short description",
-	Long:  "long description",
+	Short: "Manage asynq",
+	Long:  `Manage asynq.`,
 }
 
 func init() {
