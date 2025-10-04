@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Ahu-Tools/ahum/cmd/asynq"
 	"github.com/Ahu-Tools/ahum/cmd/connect"
 	"github.com/Ahu-Tools/ahum/cmd/edge"
 	"github.com/Ahu-Tools/ahum/cmd/gin"
@@ -37,12 +38,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.AddCommand(initialise.InitCmd)
-	rootCmd.AddCommand(infra.Cmd)
-	rootCmd.AddCommand(edge.EdgeCmd)
-	rootCmd.AddCommand(service.ServiceCmd)
-	rootCmd.AddCommand(gin.GinCmd)
-	rootCmd.AddCommand(connect.Cmd)
+	rootCmd.AddCommand(initialise.InitCmd, infra.Cmd, edge.EdgeCmd, service.ServiceCmd, gin.GinCmd, connect.Cmd, asynq.Cmd)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,

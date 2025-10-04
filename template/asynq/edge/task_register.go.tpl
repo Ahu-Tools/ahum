@@ -1,0 +1,1 @@
+asynq.RegisterHandler(version, GetPattern(Type{{.TaskName}}), Handle{{.TaskName}})
