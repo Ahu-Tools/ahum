@@ -298,11 +298,9 @@ This approach means:
 - [x] **Gin Edge** - REST API with version/entity/handler management
 - [x] **Asynq Edge** - Background task processing
 
-### 🚧 In Progress
+### 📋 Planned
 
 - [ ] **Kafka Integration** - Event-driven messaging
-
-### 📋 Planned
 
 - [ ] **PostgreSQL Repository Management**
   - [ ] GORM GEN integration (DB to struct, dynamic SQL, DAO)
